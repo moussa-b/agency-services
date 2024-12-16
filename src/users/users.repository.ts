@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from "./dto/create-user.dto";
 import { User } from "./entities/user.entity";
-import { SqliteService } from "../core/db/sqlite.service";
+import { SqliteService } from "../shared/db/sqlite.service";
 import { v4 as uuidv4 } from "uuid";
 
 @Injectable()

@@ -8,7 +8,7 @@ import { UsersRepository } from './users.repository';
 import { User } from './entities/user.entity';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
-import { MailService } from "../core/mail/mail.service";
+import { MailService } from "../shared/mail/mail.service";
 
 @Injectable()
 export class UsersService {

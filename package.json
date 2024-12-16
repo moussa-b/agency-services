@@ -33,6 +33,7 @@
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/terminus": "^10.2.3",
+    "@nestjs/throttler": "^6.3.0",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.7",
     "handlebars": "^4.7.8",
