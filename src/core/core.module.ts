@@ -4,6 +4,7 @@ import { SqliteService } from "./db/sqlite.service";
 import { MailerModule } from "@nestjs-modules/mailer";
 import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { CoreHealthIndicator } from "./core.health-indicator";
 
 @Global()
 @Module({
@@ -34,7 +35,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
       }),
     }),
   ],
-  providers: [SqliteService, MailService],
-  exports: [SqliteService, MailService]
+  providers: [SqliteService, MailService, CoreHealthIndicator],
+  exports: [SqliteService, MailService, CoreHealthIndicator]
 })
 export class CoreModule {}
