@@ -10,7 +10,7 @@ export class SqliteService implements OnModuleInit {
   constructor(private readonly configService: ConfigService) {}
 
   onModuleInit() {
-    const databasePath = this.configService.get<string>('DATABASE_FILE', './database.sqlite');
+    const databasePath = this.configService.get<string>('DATABASE_FILE');
     this.db = new Database(databasePath, (err) => {
       if (err) {
         console.error('Error connecting to SQLite database:', err);

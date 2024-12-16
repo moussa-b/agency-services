@@ -12,7 +12,7 @@
       },
       {
         "include": "../database/**/*",
-        "exclude": "../database/database.sqlite",
+        "exclude": "../database/agency_db.sqlite",
         "outDir": "dist/database"
       }
     ]
