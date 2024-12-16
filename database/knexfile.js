@@ -1,10 +1,11 @@
 /**
  * @type { Object.<string, import("knex").Knex.Config> }
  */
-require('dotenv').config({ path: process.env.NODE_ENV === 'production' ? '../../../.env' : '../.env' });
 const path = require('path');
+const pathPrefix = process.env.NODE_ENV === 'production' ? '../..' : '..'
+require('dotenv').config({ path: pathPrefix + '/.env' });
 
-const filename = path.resolve(path.join(__dirname, '..', process.env.DATABASE_FILE));
+const filename = path.resolve(path.join(__dirname, pathPrefix , process.env.DATABASE_FILE));
 console.log('Running knexfile.js with process.env.DATABASE_FILE = ', filename);
 
 module.exports = {
