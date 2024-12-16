@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Database } from "sqlite3";
-import path from "path";
+import * as path from 'path';
 
 @Injectable()
 export class SqliteService implements OnModuleInit {
