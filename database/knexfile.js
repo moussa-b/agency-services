@@ -1,7 +1,7 @@
 /**
  * @type { Object.<string, import("knex").Knex.Config> }
  */
-require('dotenv').config({ path: process.env.NODE_ENV === 'production' ? '../../.env' : '../.env' });
+require('dotenv').config({ path: process.env.NODE_ENV === 'production' ? '../../../.env' : '../.env' });
 const path = require('path');
 
 const filename = path.resolve(path.join(__dirname, '..', process.env.DATABASE_FILE));
