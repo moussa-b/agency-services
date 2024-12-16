@@ -1,6 +1,7 @@
 import { Injectable, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Database } from "sqlite3";
+import path from "path";
 
 @Injectable()
 export class SqliteService implements OnModuleInit {
@@ -14,7 +15,7 @@ export class SqliteService implements OnModuleInit {
       if (err) {
         console.error('Error connecting to SQLite database:', err);
       } else {
-        console.log('Connected to SQLite database with path : ', databasePath);
+        console.log('Connected to SQLite database with path : ', path.resolve(databasePath));
       }
     });
   }

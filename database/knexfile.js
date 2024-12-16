@@ -43,6 +43,7 @@ module.exports = {
     connection: {
       filename: filename
     },
+    useNullAsDefault: true,
     migrations: {
       tableName: 'knex_migrations',
       directory: './migrations'
