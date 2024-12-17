@@ -7,6 +7,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { DbHealthIndicator } from "./db/db-health.indicator";
 import { APP_GUARD } from "@nestjs/core";
+import { MailHealthIndicator } from "./mail/mail-health.indicator";
 
 @Global()
 @Module({
@@ -48,8 +49,9 @@ import { APP_GUARD } from "@nestjs/core";
     },
     SqliteService,
     MailService,
-    DbHealthIndicator
+    DbHealthIndicator,
+    MailHealthIndicator
   ],
-  exports: [SqliteService, MailService, DbHealthIndicator]
+  exports: [SqliteService, MailService, DbHealthIndicator, MailHealthIndicator]
 })
 export class SharedModule {}

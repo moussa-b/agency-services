@@ -3,6 +3,7 @@ import { HealthCheck, HealthCheckService } from "@nestjs/terminus";
 import { DbHealthIndicator } from "../shared/db/db-health.indicator";
 import { UsersHealthIndicator } from "../users/users-health.indicator";
 import { ClientsHealthIndicator } from "../clients/clients-health.indicator";
+import { MailHealthIndicator } from "../shared/mail/mail-health.indicator";
 
 @Controller('health')
 export class HealthController {
@@ -11,6 +12,7 @@ export class HealthController {
     private dbHealthIndicator: DbHealthIndicator,
     private usersHealthIndicator: UsersHealthIndicator,
     private clientsHealthIndicator: ClientsHealthIndicator,
+    private mailHealthIndicator: MailHealthIndicator,
   ) {}
 
   @Get()
@@ -20,6 +22,7 @@ export class HealthController {
       () => this.dbHealthIndicator.isHealthy(),
       () => this.usersHealthIndicator.isHealthy(),
       () => this.clientsHealthIndicator.isHealthy(),
+      () => this.mailHealthIndicator.isHealthy(),
     ])
   }
 }
