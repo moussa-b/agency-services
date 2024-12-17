@@ -9,18 +9,16 @@ export class UsersHealthIndicator extends HealthIndicator {
   }
 
   async isHealthy(): Promise<HealthIndicatorResult> {
-    const isUsersTablePresent: boolean =
-      (await this.sqliteService.get(
-        'SELECT count(*) FROM sqlite_master WHERE type="table" AND name="users"',
-      )) === 1;
-    const isAdminUserPresent: boolean =
-      (await this.sqliteService.get(
-        'SELECT count(*) FROM users WHERE username = "admin"',
-      )) === 1;
-    const isHealthy = isUsersTablePresent && isAdminUserPresent;
+    const userTableCount: {count: number} = await this.sqliteService.get(
+      'SELECT count(*) as count FROM sqlite_master WHERE type="table" AND name="users"',
+    );
+    const adminUserCount: {count: number} = await this.sqliteService.get(
+      'SELECT count(*) as count FROM users WHERE username = "admin"',
+    );
+    const isHealthy = userTableCount?.count === 1 && adminUserCount?.count === 1;
     return this.getStatus('users', isHealthy, {
-      isUsersTablePresent: isUsersTablePresent,
-      isAdminUserPresent: isAdminUserPresent,
+      isUsersTablePresent: userTableCount?.count === 1,
+      isAdminUserPresent: adminUserCount?.count === 1,
     });
   }
 }

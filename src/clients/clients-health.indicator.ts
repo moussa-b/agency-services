@@ -9,10 +9,11 @@ export class ClientsHealthIndicator extends HealthIndicator {
   }
 
   async isHealthy(): Promise<HealthIndicatorResult> {
-    const isClientsTablePresent: boolean =
-      (await this.sqliteService.get(
-        'SELECT count(*) FROM sqlite_master WHERE type="table" AND name="users"',
-      )) === 1;
-    return this.getStatus('clients', isClientsTablePresent);
+    const clientTableCount: {count: number} = await this.sqliteService.get(
+      'SELECT count(*) as count FROM sqlite_master WHERE type="table" AND name="users"',
+    );
+    return this.getStatus('clients', clientTableCount?.count === 1, {
+      isClientTablePresent: clientTableCount?.count === 1
+    });
   }
 }
