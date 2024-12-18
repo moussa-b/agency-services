@@ -9,6 +9,7 @@ import { User } from './entities/user.entity';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
 import { MailService } from "../shared/mail/mail.service";
+import { UpdateClientDto } from "../clients/dto/update-client.dto";
 
 @Injectable()
 export class UsersService {
@@ -43,6 +44,22 @@ export class UsersService {
     );
 
     return user;
+  }
+
+  async findAll(): Promise<User[]> {
+    return this.usersRepository.findAll();
+  }
+
+  async findOne(id: number): Promise<User> {
+    return this.usersRepository.findOne(id);
+  }
+
+  async update(id: number, updateClientDto: UpdateClientDto): Promise<User> {
+    return this.usersRepository.update(id, updateClientDto);
+  }
+
+  async remove(id: number): Promise<boolean> {
+    return this.usersRepository.remove(id);
   }
 
   async findByEmailOrUsername(email: string): Promise<User> {
