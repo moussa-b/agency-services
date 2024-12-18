@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -51,6 +52,9 @@ export class UsersController {
   @Delete(':id')
   @Roles(UserRole.ADMIN)
   async remove(@Param('id') id: string) {
+    if (+id === 1) {
+      throw new BadRequestException(`User with ID ${id} can not be deleted`);
+    }
     const client = await this.usersService.findOne(+id);
     if (!client) {
       throw new NotFoundException(`User with ID ${id} not found`);
