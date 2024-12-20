@@ -40,7 +40,7 @@ export class UsersRepository {
   }): Promise<User> {
     const insertQuery = `INSERT INTO users (
       uuid, username, email, password, first_name, last_name, activation_token, role, is_active
-    ) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     return this.sqliteService
       .run(insertQuery,
         [
@@ -55,7 +55,7 @@ export class UsersRepository {
           userData.isActive,
         ])
       .then(() => {
-        const selectQuery = `SELECT id FROM users ORDER BY id DESC LIMIT 1`;
+        const selectQuery = `SELECT * FROM users ORDER BY id DESC LIMIT 1`;
         return this.sqliteService.get<User>(selectQuery, undefined, this.rowMapper);
       });
   }
@@ -87,8 +87,7 @@ export class UsersRepository {
         id,
       ])
       .then(() => {
-        const selectQuery = `SELECT * FROM users WHERE id =?)`;
-        return this.sqliteService.get<User>(selectQuery, [id], this.rowMapper);
+        return this.findOne(id);
       });
   }
 

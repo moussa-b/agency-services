@@ -9,7 +9,7 @@ exports.up = function(knex) {
           uuid TEXT,
           username TEXT UNIQUE NOT NULL,
           email TEXT UNIQUE NOT NULL,
-          password TEXT NOT NULL,
+          password TEXT,
           first_name TEXT NOT NULL,
           last_name TEXT NOT NULL,
           role TEXT NOT NULL DEFAULT 'user',
