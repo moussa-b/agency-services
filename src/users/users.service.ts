@@ -25,7 +25,7 @@ export class UsersService {
       throw new ConflictException('Email already exists');
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = password ? await bcrypt.hash(password, 10) : undefined;
     const activationToken = uuidv4();
 
     const user = await this.usersRepository.create({

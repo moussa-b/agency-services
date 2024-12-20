@@ -19,11 +19,11 @@ import { UpdateClientDto } from '../clients/dto/update-client.dto';
 import { UserRole } from './entities/user-role.enum';
 
 @Controller('users')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
