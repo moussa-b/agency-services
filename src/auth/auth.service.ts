@@ -3,6 +3,8 @@ import { UsersService } from "../users/users.service";
 import * as bcrypt from 'bcrypt';
 import { JwtService } from "@nestjs/jwt";
 import { User } from "../users/entities/user.entity";
+import { ActivateUserDto } from "../users/dto/activate-user.dto";
+import { ResetPasswordDto } from "../users/dto/reset-password.dto";
 
 @Injectable()
 export class AuthService {
@@ -26,5 +28,17 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(payload),
     };
+  }
+
+  async activate(activateUserDto: ActivateUserDto) {
+    return {status: await this.usersService.activateUser(activateUserDto)};
+  }
+
+  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+    return {status: await this.usersService.resetPassword(resetPasswordDto)};
+  }
+
+  async forgotPassword(email: string) {
+    return {status: await this.usersService.forgotPassword(email)};
   }
 }

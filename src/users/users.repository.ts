@@ -33,44 +33,56 @@ export class UsersRepository {
     return user;
   }
 
-  async create(userData: CreateUserDto & {
-    password: string;
-    activationToken: string;
-    isActive: boolean;
-  }): Promise<User> {
+  async create(
+    userData: CreateUserDto & {
+      password: string;
+      activationToken: string;
+      isActive: boolean;
+    },
+  ): Promise<User> {
     const insertQuery = `INSERT INTO users (
       uuid, username, email, password, first_name, last_name, activation_token, role, is_active
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     return this.sqliteService
-      .run(insertQuery,
-        [
-          uuidv4(),
-          userData.username || userData.email,
-          userData.email,
-          userData.password,
-          userData.firstName,
-          userData.lastName,
-          userData.activationToken,
-          userData.role || UserRole.USER,
-          userData.isActive,
-        ])
+      .run(insertQuery, [
+        uuidv4(),
+        userData.username || userData.email,
+        userData.email,
+        userData.password,
+        userData.firstName,
+        userData.lastName,
+        userData.activationToken,
+        userData.role || UserRole.USER,
+        userData.isActive,
+      ])
       .then(() => {
         const selectQuery = `SELECT * FROM users ORDER BY id DESC LIMIT 1`;
-        return this.sqliteService.get<User>(selectQuery, undefined, this.rowMapper);
+        return this.sqliteService.get<User>(
+          selectQuery,
+          undefined,
+          this.rowMapper,
+        );
       });
   }
 
   async findAll(): Promise<User[]> {
     return this.sqliteService.all<User>(
-      'SELECT * FROM users ORDER BY created_at DESC', undefined, this.rowMapper
+      'SELECT * FROM users ORDER BY created_at DESC',undefined, this.rowMapper,
     );
   }
 
   async findOne(id: number): Promise<User> {
-    return this.sqliteService.get<User>('SELECT * FROM users WHERE id = ?', [id], this.rowMapper);
+    return this.sqliteService.get<User>(
+      'SELECT * FROM users WHERE id = ?',
+      [id],
+      this.rowMapper,
+    );
   }
 
-  async update(id: number, customerData: Partial<CreateUserDto>): Promise<User> {
+  async update(
+    id: number,
+    customerData: Partial<CreateUserDto>,
+  ): Promise<User> {
     const updateQuery = `
       UPDATE users
       SET email = COALESCE(?, email),
@@ -109,25 +121,44 @@ export class UsersRepository {
   }
 
   async findByEmailOrUsername(email: string): Promise<User> {
-    return this.sqliteService.get<User>('SELECT * FROM users WHERE email = ? OR username = ?', [email, email], (row: any) => this.rowMapper(row, true));
+    return this.sqliteService.get<User>(
+      'SELECT * FROM users WHERE email = ? OR username = ?',
+      [email, email],
+      (row: any) => this.rowMapper(row, true),
+    );
   }
 
   async findById(id: number): Promise<User> {
-    return this.sqliteService.get<User>('SELECT * FROM users WHERE id = ?', [id], this.rowMapper);
+    return this.sqliteService.get<User>(
+      'SELECT * FROM users WHERE id = ?',
+      [id],
+      this.rowMapper,
+    );
   }
 
   async findByActivationToken(activationToken: string): Promise<User> {
-    return this.sqliteService.get<User>('SELECT * FROM users WHERE activation_token = ?', [activationToken], this.rowMapper);
+    return this.sqliteService.get<User>(
+      'SELECT * FROM users WHERE activation_token = ?',
+      [activationToken],
+      this.rowMapper,
+    );
   }
 
   async findByResetPasswordToken(resetPasswordToken: string): Promise<User> {
-    return this.sqliteService.get<User>('SELECT * FROM users WHERE reset_password_token = ? AND reset_password_expires > NOW()', [resetPasswordToken], this.rowMapper);
+    return this.sqliteService.get<User>(
+      'SELECT * FROM users WHERE reset_password_token = ? AND reset_password_expires > ?',
+      [resetPasswordToken, new Date()],
+      this.rowMapper,
+    );
   }
 
-  async activateUser(id: number): Promise<boolean> {
+  async activateUser(id: number, password: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
       return this.sqliteService
-        .run('UPDATE users SET is_active = true, activation_token = NULL WHERE id = ?', [id])
+        .run(
+          'UPDATE users SET is_active = true, activation_token = NULL, password = ? WHERE id = ?',
+          [password, id],
+        )
         .then(() => {
           this.sqliteService
             .get<{ count: number }>(
@@ -141,10 +172,17 @@ export class UsersRepository {
     });
   }
 
-  async setResetPasswordToken(id: number, token: string, expires: Date): Promise<boolean> {
+  async setResetPasswordToken(
+    id: number,
+    token: string,
+    expires: Date,
+  ): Promise<boolean> {
     return new Promise((resolve, reject) => {
       return this.sqliteService
-        .run('UPDATE users SET reset_password_token = ?, reset_password_expires = ? WHERE id = ?', [token, expires, id])
+        .run(
+          'UPDATE users SET reset_password_token = ?, reset_password_expires = ? WHERE id = ?',
+          [token, expires, id],
+        )
         .then(() => {
           this.sqliteService
             .get<{ count: number }>(
@@ -161,7 +199,10 @@ export class UsersRepository {
   async resetPassword(id: number, hashedPassword: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
       return this.sqliteService
-        .run('UPDATE users SET password = ?, reset_password_token = NULL, reset_password_expires = NULL WHERE id = ?', [hashedPassword, id])
+        .run(
+          'UPDATE users SET password = ?, reset_password_token = NULL, reset_password_expires = NULL WHERE id = ?',
+          [hashedPassword, id],
+        )
         .then(() => {
           this.sqliteService
             .get<{ count: number }>(
