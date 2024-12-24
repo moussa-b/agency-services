@@ -10,8 +10,8 @@ exports.up = function(knex) {
   }
   return bcrypt.hash(process.env.ADMIN_USER_PASSWORD, 10).then((cryptedPassword) => {
     return knex.raw(`
-      INSERT INTO users (uuid, username, email, password, first_name, last_name, role, is_active, created_at) VALUES
-          ('fa2e07d2-8560-4788-ae12-3afc0037223a', 'admin', 'admin@example.com', '${cryptedPassword}', 'Administrator', 'System', 'ADMIN', 1, CURRENT_TIMESTAMP);
+      INSERT INTO users (uuid, username, email, password, first_name, last_name, sex, role, is_active, created_at) VALUES
+          ('fa2e07d2-8560-4788-ae12-3afc0037223a', 'admin', 'admin@example.com', '${cryptedPassword}', 'Administrator', 'System', 'M', 'ADMIN', 1, CURRENT_TIMESTAMP);
   `)
   });
 };

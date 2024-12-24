@@ -12,6 +12,7 @@ exports.up = function(knex) {
           password TEXT,
           first_name TEXT NOT NULL,
           last_name TEXT NOT NULL,
+          sex TEXT,
           role TEXT NOT NULL DEFAULT 'user',
           is_active BOOLEAN DEFAULT 0,
           activation_token TEXT,

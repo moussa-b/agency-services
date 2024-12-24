@@ -1,3 +1,5 @@
+import { UserSex } from "./user-sex.enum";
+
 export class User {
   id: number;
   uuid: number;
@@ -6,6 +8,7 @@ export class User {
   password: string;
   firstName: string;
   lastName: string;
+  sex: UserSex;
   role: string;
   isActive: boolean;
   activationToken?: string;

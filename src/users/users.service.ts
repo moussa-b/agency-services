@@ -9,10 +9,11 @@ import { User } from './entities/user.entity';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
 import { MailService } from "../shared/mail/mail.service";
-import { UpdateClientDto } from "../clients/dto/update-client.dto";
 import { ConfigService } from "@nestjs/config";
 import { ActivateUserDto } from "./dto/activate-user.dto";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
+import { UpdateUserSecurityDto } from "./dto/update-user-security.dto";
 
 @Injectable()
 export class UsersService {
@@ -54,11 +55,11 @@ export class UsersService {
     return this.usersRepository.findAll();
   }
 
-  async findOne(id: number): Promise<User> {
-    return this.usersRepository.findOne(id);
+  async findOne(id: number, includePassword = false, includeUsername = false): Promise<User> {
+    return this.usersRepository.findOne(id, includePassword, includeUsername);
   }
 
-  async update(id: number, updateClientDto: UpdateClientDto): Promise<User> {
+  async update(id: number, updateClientDto: UpdateUserDto): Promise<User> {
     return this.usersRepository.update(id, updateClientDto);
   }
 
@@ -129,5 +130,12 @@ export class UsersService {
       { template: './reset-password', context: { name: user.firstName, url } },
     );
     return true;
+  }
+
+  async updateProfileSecurity(userId: number, updateUserSecurityDto: UpdateUserSecurityDto) {
+    if (updateUserSecurityDto.newPassword?.length > 0) {
+      updateUserSecurityDto.newPassword = await bcrypt.hash(updateUserSecurityDto.newPassword, 10);
+    }
+    return this.usersRepository.updateProfileSecurity(userId, updateUserSecurityDto);
   }
 }

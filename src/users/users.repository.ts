@@ -4,6 +4,7 @@ import { User } from "./entities/user.entity";
 import { SqliteService } from "../shared/db/sqlite.service";
 import { v4 as uuidv4 } from "uuid";
 import { UserRole } from "./entities/user-role.enum";
+import { UpdateUserSecurityDto } from "./dto/update-user-security.dto";
 
 @Injectable()
 export class UsersRepository {
@@ -23,6 +24,7 @@ export class UsersRepository {
     }
     user.firstName = row['first_name'];
     user.lastName = row['last_name'];
+    user.sex = row['sex'];
     user.role = row['role'];
     user.isActive = row['is_active'];
     user.activationToken = row['activation_token'];
@@ -41,8 +43,8 @@ export class UsersRepository {
     },
   ): Promise<User> {
     const insertQuery = `INSERT INTO users (
-      uuid, username, email, password, first_name, last_name, activation_token, role, is_active
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+      uuid, username, email, password, first_name, last_name, sex, activation_token, role, is_active
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     return this.sqliteService
       .run(insertQuery, [
         uuidv4(),
@@ -51,6 +53,7 @@ export class UsersRepository {
         userData.password,
         userData.firstName,
         userData.lastName,
+        userData.sex,
         userData.activationToken,
         userData.role || UserRole.USER,
         userData.isActive,
@@ -71,11 +74,11 @@ export class UsersRepository {
     );
   }
 
-  async findOne(id: number): Promise<User> {
+  async findOne(id: number, includePassword = false, includeUsername = false): Promise<User> {
     return this.sqliteService.get<User>(
       'SELECT * FROM users WHERE id = ?',
       [id],
-      this.rowMapper,
+      (row) => this.rowMapper(row, includePassword, includeUsername),
     );
   }
 
@@ -88,6 +91,7 @@ export class UsersRepository {
       SET email = COALESCE(?, email),
           first_name = COALESCE(?, first_name),
           last_name = COALESCE(?, last_name),
+          sex = COALESCE(?, sex),
           role = COALESCE(?, role)
       WHERE id = ?`;
     return this.sqliteService
@@ -95,6 +99,7 @@ export class UsersRepository {
         customerData.email || null,
         customerData.firstName || null,
         customerData.lastName || null,
+        customerData.sex || null,
         customerData.role || null,
         id,
       ])
@@ -208,6 +213,35 @@ export class UsersRepository {
             .get<{ count: number }>(
               'SELECT COUNT(*) as count FROM users WHERE id = ? AND reset_password_token IS NULL AND reset_password_expires IS NULL',
               [id],
+            )
+            .then((result: { count: number }) => resolve(result.count === 1))
+            .catch((err) => reject(err));
+        })
+        .catch((err) => reject(err));
+    });
+  }
+
+  async updateProfileSecurity(userId: number, updateUserSecurityDto: UpdateUserSecurityDto): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      return this.sqliteService
+        .run(
+          `UPDATE users SET username = COALESCE(?, username),
+          password = COALESCE(?, password)
+          WHERE id = ?`,
+          [
+            updateUserSecurityDto.username?.length > 0 ? updateUserSecurityDto.username : null,
+            updateUserSecurityDto.newPassword?.length > 0 ? updateUserSecurityDto.newPassword : null,
+            userId,
+          ],
+        )
+        .then(() => {
+          this.sqliteService
+            .get<{ count: number }>(
+              'SELECT COUNT(*) as count FROM users WHERE id = ? AND username = ?',
+              [
+                userId,
+                updateUserSecurityDto.username,
+              ],
             )
             .then((result: { count: number }) => resolve(result.count === 1))
             .catch((err) => reject(err));
