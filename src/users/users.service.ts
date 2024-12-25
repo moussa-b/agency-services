@@ -8,29 +8,33 @@ import { UsersRepository } from './users.repository';
 import { User } from './entities/user.entity';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
-import { MailService } from "../shared/mail/mail.service";
-import { ConfigService } from "@nestjs/config";
-import { ActivateUserDto } from "./dto/activate-user.dto";
-import { ResetPasswordDto } from "./dto/reset-password.dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
-import { UpdateUserSecurityDto } from "./dto/update-user-security.dto";
+import { MailService } from '../shared/mail/mail.service';
+import { ConfigService } from '@nestjs/config';
+import { ActivateUserDto } from './dto/activate-user.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserSecurityDto } from './dto/update-user-security.dto';
 
 @Injectable()
 export class UsersService {
-
-  constructor(private usersRepository: UsersRepository,
-              private mailService: MailService,
-              private config: ConfigService,) {}
+  constructor(
+    private usersRepository: UsersRepository,
+    private mailService: MailService,
+    private config: ConfigService,
+  ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const { email, password } = createUserDto;
 
-    const existingUser = await this.usersRepository.findByEmailOrUsername(email);
+    const existingUser =
+      await this.usersRepository.findByEmailOrUsername(email);
     if (existingUser) {
       throw new ConflictException('Email already exists');
     }
 
-    const hashedPassword = password ? await bcrypt.hash(password, 10) : undefined;
+    const hashedPassword = password
+      ? await bcrypt.hash(password, 10)
+      : undefined;
     const activationToken = uuidv4();
 
     const user = await this.usersRepository.create({
@@ -55,7 +59,11 @@ export class UsersService {
     return this.usersRepository.findAll();
   }
 
-  async findOne(id: number, includePassword = false, includeUsername = false): Promise<User> {
+  async findOne(
+    id: number,
+    includePassword = false,
+    includeUsername = false,
+  ): Promise<User> {
     return this.usersRepository.findOne(id, includePassword, includeUsername);
   }
 
@@ -92,7 +100,9 @@ export class UsersService {
   }
 
   async activateUser(activateUserDto: ActivateUserDto): Promise<boolean> {
-    const user = await this.findByActivationToken(activateUserDto.activationToken);
+    const user = await this.findByActivationToken(
+      activateUserDto.activationToken,
+    );
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -105,11 +115,17 @@ export class UsersService {
     resetPasswordToken: string,
     expires: Date,
   ): Promise<void> {
-    await this.usersRepository.setResetPasswordToken(id, resetPasswordToken, expires);
+    await this.usersRepository.setResetPasswordToken(
+      id,
+      resetPasswordToken,
+      expires,
+    );
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<boolean> {
-    const user = await this.findByResetPasswordToken(resetPasswordDto.resetPasswordToken);
+    const user = await this.findByResetPasswordToken(
+      resetPasswordDto.resetPasswordToken,
+    );
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -124,18 +140,26 @@ export class UsersService {
     expires.setHours(expires.getHours() + 24);
     await this.setResetPasswordToken(user.id, resetPasswordToken, expires);
     const url = `${this.config.get<string>('FRONT_END_URL')}/reset-password?token=${resetPasswordToken}&username=${user.username || user.email}`;
-    await this.mailService.sendEmail(
-      user.email,
-      'Password Reset Request',
-      { template: './reset-password', context: { name: user.firstName, url } },
-    );
+    await this.mailService.sendEmail(user.email, 'Password Reset Request', {
+      template: './reset-password',
+      context: { name: user.firstName, url },
+    });
     return true;
   }
 
-  async updateProfileSecurity(userId: number, updateUserSecurityDto: UpdateUserSecurityDto) {
+  async updateProfileSecurity(
+    userId: number,
+    updateUserSecurityDto: UpdateUserSecurityDto,
+  ) {
     if (updateUserSecurityDto.newPassword?.length > 0) {
-      updateUserSecurityDto.newPassword = await bcrypt.hash(updateUserSecurityDto.newPassword, 10);
+      updateUserSecurityDto.newPassword = await bcrypt.hash(
+        updateUserSecurityDto.newPassword,
+        10,
+      );
     }
-    return this.usersRepository.updateProfileSecurity(userId, updateUserSecurityDto);
+    return this.usersRepository.updateProfileSecurity(
+      userId,
+      updateUserSecurityDto,
+    );
   }
 }

@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { TransformInterceptor } from "./transform/transform.interceptor";
+import { TransformInterceptor } from './transform/transform.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

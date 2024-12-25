@@ -1,9 +1,9 @@
-import { Controller, Get } from "@nestjs/common";
-import { HealthCheck, HealthCheckService } from "@nestjs/terminus";
-import { DbHealthIndicator } from "../shared/db/db-health.indicator";
-import { UsersHealthIndicator } from "../users/users-health.indicator";
-import { ClientsHealthIndicator } from "../clients/clients-health.indicator";
-import { MailHealthIndicator } from "../shared/mail/mail-health.indicator";
+import { Controller, Get } from '@nestjs/common';
+import { HealthCheck, HealthCheckService } from '@nestjs/terminus';
+import { DbHealthIndicator } from '../shared/db/db-health.indicator';
+import { UsersHealthIndicator } from '../users/users-health.indicator';
+import { ClientsHealthIndicator } from '../clients/clients-health.indicator';
+import { MailHealthIndicator } from '../shared/mail/mail-health.indicator';
 
 @Controller('health')
 export class HealthController {
@@ -23,6 +23,6 @@ export class HealthController {
       () => this.usersHealthIndicator.isHealthy(),
       () => this.clientsHealthIndicator.isHealthy(),
       () => this.mailHealthIndicator.isHealthy(),
-    ])
+    ]);
   }
 }

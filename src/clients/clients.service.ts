@@ -6,7 +6,6 @@ import { Client } from './entities/client.entity';
 
 @Injectable()
 export class ClientsService {
-
   constructor(private readonly clientRepository: ClientRepository) {}
 
   async create(createClientDto: CreateClientDto): Promise<Client> {

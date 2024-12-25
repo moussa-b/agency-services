@@ -1,6 +1,13 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MinLength } from "class-validator";
-import { UserRole } from "../entities/user-role.enum";
-import { Sex } from "../../shared/models/user-sex.enum";
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
+import { UserRole } from '../entities/user-role.enum';
+import { Sex } from '../../shared/models/user-sex.enum';
 
 export class CreateUserDto {
   @IsString()

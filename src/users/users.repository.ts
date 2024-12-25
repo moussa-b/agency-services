@@ -1,14 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from "./dto/create-user.dto";
-import { User } from "./entities/user.entity";
-import { SqliteService } from "../shared/db/sqlite.service";
-import { v4 as uuidv4 } from "uuid";
-import { UserRole } from "./entities/user-role.enum";
-import { UpdateUserSecurityDto } from "./dto/update-user-security.dto";
+import { CreateUserDto } from './dto/create-user.dto';
+import { User } from './entities/user.entity';
+import { SqliteService } from '../shared/db/sqlite.service';
+import { v4 as uuidv4 } from 'uuid';
+import { UserRole } from './entities/user-role.enum';
+import { UpdateUserSecurityDto } from './dto/update-user-security.dto';
 
 @Injectable()
 export class UsersRepository {
-
   constructor(private readonly sqliteService: SqliteService) {}
 
   rowMapper(row: any, includePassword = false, includeUsername = false): User {
@@ -70,11 +69,17 @@ export class UsersRepository {
 
   async findAll(): Promise<User[]> {
     return this.sqliteService.all<User>(
-      'SELECT * FROM users ORDER BY created_at DESC',undefined, this.rowMapper,
+      'SELECT * FROM users ORDER BY created_at DESC',
+      undefined,
+      this.rowMapper,
     );
   }
 
-  async findOne(id: number, includePassword = false, includeUsername = false): Promise<User> {
+  async findOne(
+    id: number,
+    includePassword = false,
+    includeUsername = false,
+  ): Promise<User> {
     return this.sqliteService.get<User>(
       'SELECT * FROM users WHERE id = ?',
       [id],
@@ -221,7 +226,10 @@ export class UsersRepository {
     });
   }
 
-  async updateProfileSecurity(userId: number, updateUserSecurityDto: UpdateUserSecurityDto): Promise<boolean> {
+  async updateProfileSecurity(
+    userId: number,
+    updateUserSecurityDto: UpdateUserSecurityDto,
+  ): Promise<boolean> {
     return new Promise((resolve, reject) => {
       return this.sqliteService
         .run(
@@ -229,8 +237,12 @@ export class UsersRepository {
           password = COALESCE(?, password)
           WHERE id = ?`,
           [
-            updateUserSecurityDto.username?.length > 0 ? updateUserSecurityDto.username : null,
-            updateUserSecurityDto.newPassword?.length > 0 ? updateUserSecurityDto.newPassword : null,
+            updateUserSecurityDto.username?.length > 0
+              ? updateUserSecurityDto.username
+              : null,
+            updateUserSecurityDto.newPassword?.length > 0
+              ? updateUserSecurityDto.newPassword
+              : null,
             userId,
           ],
         )
@@ -238,10 +250,7 @@ export class UsersRepository {
           this.sqliteService
             .get<{ count: number }>(
               'SELECT COUNT(*) as count FROM users WHERE id = ? AND username = ?',
-              [
-                userId,
-                updateUserSecurityDto.username,
-              ],
+              [userId, updateUserSecurityDto.username],
             )
             .then((result: { count: number }) => resolve(result.count === 1))
             .catch((err) => reject(err));

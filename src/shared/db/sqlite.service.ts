@@ -1,6 +1,6 @@
-import { Injectable, OnModuleInit } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { Database } from "sqlite3";
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Database } from 'sqlite3';
 import * as path from 'path';
 
 @Injectable()
@@ -15,7 +15,10 @@ export class SqliteService implements OnModuleInit {
       if (err) {
         console.error('Error connecting to SQLite database:', err);
       } else {
-        console.log('Connected to SQLite database with path : ', path.resolve(databasePath));
+        console.log(
+          'Connected to SQLite database with path : ',
+          path.resolve(databasePath),
+        );
       }
     });
   }
@@ -32,7 +35,11 @@ export class SqliteService implements OnModuleInit {
     });
   }
 
-  async get<T>(query: string, params: any[] = [], rowMapper: (row: any) => T = row => row): Promise<T> {
+  async get<T>(
+    query: string,
+    params: any[] = [],
+    rowMapper: (row: any) => T = (row) => row,
+  ): Promise<T> {
     return new Promise((resolve, reject) => {
       this.db.get(query, params, (err: Error, row: any) => {
         if (err) {
@@ -44,19 +51,25 @@ export class SqliteService implements OnModuleInit {
     });
   }
 
-  async all<T>(query: string, params: any[] = [], rowMapper: (row: any) => T = row => row): Promise<T[]> {
+  async all<T>(
+    query: string,
+    params: any[] = [],
+    rowMapper: (row: any) => T = (row) => row,
+  ): Promise<T[]> {
     return new Promise((resolve, reject) => {
       this.db.all(query, params, (err: Error, rows: any[]) => {
         if (err) {
           reject(err);
         } else {
-          resolve(rows ? rows.map(row => rowMapper(row)) : rows);
+          resolve(rows ? rows.map((row) => rowMapper(row)) : rows);
         }
       });
     });
   }
 
-  async transaction(queries: { query: string; params: any[] }[]): Promise<void> {
+  async transaction(
+    queries: { query: string; params: any[] }[],
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
       this.db.serialize(() => {
         this.db.run('BEGIN TRANSACTION');

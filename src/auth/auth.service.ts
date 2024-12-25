@@ -1,17 +1,24 @@
-import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
-import { UsersService } from "../users/users.service";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
-import { JwtService } from "@nestjs/jwt";
-import { User } from "../users/entities/user.entity";
-import { ActivateUserDto } from "../users/dto/activate-user.dto";
-import { ResetPasswordDto } from "../users/dto/reset-password.dto";
-import { UpdateUserDto } from "../users/dto/update-user.dto";
-import { UpdateUserSecurityDto } from "../users/dto/update-user-security.dto";
+import { JwtService } from '@nestjs/jwt';
+import { User } from '../users/entities/user.entity';
+import { ActivateUserDto } from '../users/dto/activate-user.dto';
+import { ResetPasswordDto } from '../users/dto/reset-password.dto';
+import { UpdateUserDto } from '../users/dto/update-user.dto';
+import { UpdateUserSecurityDto } from '../users/dto/update-user-security.dto';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly usersService: UsersService,
-              private jwtService: JwtService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private jwtService: JwtService,
+  ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.usersService.findByEmailOrUsername(email);
@@ -33,15 +40,15 @@ export class AuthService {
   }
 
   async activate(activateUserDto: ActivateUserDto) {
-    return {status: await this.usersService.activateUser(activateUserDto)};
+    return { status: await this.usersService.activateUser(activateUserDto) };
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
-    return {status: await this.usersService.resetPassword(resetPasswordDto)};
+    return { status: await this.usersService.resetPassword(resetPasswordDto) };
   }
 
   async forgotPassword(email: string) {
-    return {status: await this.usersService.forgotPassword(email)};
+    return { status: await this.usersService.forgotPassword(email) };
   }
 
   getProfile(userId: number) {
@@ -55,17 +62,33 @@ export class AuthService {
     return this.usersService.update(userId, updateUserDto);
   }
 
-  async updateProfileSecurity(userId: number, updateUserSecurityDto: UpdateUserSecurityDto) {
-    if (updateUserSecurityDto.newPassword !== updateUserSecurityDto.confirmPassword) {
+  async updateProfileSecurity(
+    userId: number,
+    updateUserSecurityDto: UpdateUserSecurityDto,
+  ) {
+    if (
+      updateUserSecurityDto.newPassword !==
+      updateUserSecurityDto.confirmPassword
+    ) {
       throw new BadRequestException(`Passwords don't match`);
     }
     const user = await this.usersService.findOne(userId, true, false);
     if (!user) {
       throw new NotFoundException(`User with ID ${user} not found`);
     }
-    if ((!await bcrypt.compare(updateUserSecurityDto.currentPassword, user.password))) {
+    if (
+      !(await bcrypt.compare(
+        updateUserSecurityDto.currentPassword,
+        user.password,
+      ))
+    ) {
       throw new BadRequestException(`Password is invalid`);
     }
-    return {status: await this.usersService.updateProfileSecurity(userId, updateUserSecurityDto)};
+    return {
+      status: await this.usersService.updateProfileSecurity(
+        userId,
+        updateUserSecurityDto,
+      ),
+    };
   }
 }

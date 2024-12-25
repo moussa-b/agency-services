@@ -1,17 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Client } from './entities/client.entity';
 import { CreateClientDto } from './dto/create-client.dto';
-import { SqliteService } from "../shared/db/sqlite.service";
+import { SqliteService } from '../shared/db/sqlite.service';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class ClientRepository {
-
   constructor(private readonly sqliteService: SqliteService) {}
 
   rowMapper(row: any): Client {
-    for (let i = 0; i < 10; i++)
-      console.log(uuidv4());
     const client = new Client();
     client.id = row['id'];
     client.uuid = row['uuid'];
@@ -40,21 +37,34 @@ export class ClientRepository {
       ])
       .then(() => {
         const selectQuery = `SELECT * FROM clients ORDER BY id DESC LIMIT 1`;
-        return this.sqliteService.get<Client>(selectQuery, undefined, this.rowMapper);
+        return this.sqliteService.get<Client>(
+          selectQuery,
+          undefined,
+          this.rowMapper,
+        );
       });
   }
 
   async findAll(): Promise<Client[]> {
     return this.sqliteService.all<Client>(
-      'SELECT * FROM clients ORDER BY created_at DESC', undefined, this.rowMapper
+      'SELECT * FROM clients ORDER BY created_at DESC',
+      undefined,
+      this.rowMapper,
     );
   }
 
   async findOne(id: number): Promise<Client> {
-    return this.sqliteService.get<Client>('SELECT * FROM clients WHERE id = ?', [id], this.rowMapper);
+    return this.sqliteService.get<Client>(
+      'SELECT * FROM clients WHERE id = ?',
+      [id],
+      this.rowMapper,
+    );
   }
 
-  async update(id: number, customerData: Partial<CreateClientDto>): Promise<Client> {
+  async update(
+    id: number,
+    customerData: Partial<CreateClientDto>,
+  ): Promise<Client> {
     const updateQuery = `
       UPDATE clients
       SET first_name = COALESCE(?, first_name),
@@ -76,7 +86,11 @@ export class ClientRepository {
       ])
       .then(() => {
         const selectQuery = `SELECT * FROM clients WHERE id =?`;
-        return this.sqliteService.get<Client>(selectQuery, [id], this.rowMapper);
+        return this.sqliteService.get<Client>(
+          selectQuery,
+          [id],
+          this.rowMapper,
+        );
       });
   }
 

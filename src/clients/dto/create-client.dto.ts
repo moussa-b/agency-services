@@ -1,5 +1,11 @@
-import { IsEmail, IsNotEmpty, IsString, IsOptional, IsEnum } from "class-validator";
-import { Sex } from "../../shared/models/user-sex.enum";
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { Sex } from '../../shared/models/user-sex.enum';
 
 export class CreateClientDto {
   @IsString()

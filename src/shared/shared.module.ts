@@ -1,21 +1,23 @@
-import { Global, Module } from "@nestjs/common";
+import { Global, Module } from '@nestjs/common';
 import { MailService } from './mail/mail.service';
-import { SqliteService } from "./db/sqlite.service";
-import { MailerModule } from "@nestjs-modules/mailer";
-import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
-import { DbHealthIndicator } from "./db/db-health.indicator";
-import { APP_GUARD } from "@nestjs/core";
-import { MailHealthIndicator } from "./mail/mail-health.indicator";
+import { SqliteService } from './db/sqlite.service';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { DbHealthIndicator } from './db/db-health.indicator';
+import { APP_GUARD } from '@nestjs/core';
+import { MailHealthIndicator } from './mail/mail-health.indicator';
 
 @Global()
 @Module({
   imports: [
-    ThrottlerModule.forRoot([{
-      ttl: 60000,
-      limit: 100,
-    }]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 100,
+      },
+    ]),
     ConfigModule.forRoot(),
     MailerModule.forRootAsync({
       imports: [ConfigModule],
@@ -50,8 +52,8 @@ import { MailHealthIndicator } from "./mail/mail-health.indicator";
     SqliteService,
     MailService,
     DbHealthIndicator,
-    MailHealthIndicator
+    MailHealthIndicator,
   ],
-  exports: [SqliteService, MailService, DbHealthIndicator, MailHealthIndicator]
+  exports: [SqliteService, MailService, DbHealthIndicator, MailHealthIndicator],
 })
 export class SharedModule {}
