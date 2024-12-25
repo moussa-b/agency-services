@@ -15,9 +15,11 @@ export class ClientRepository {
     const client = new Client();
     client.id = row['id'];
     client.uuid = row['uuid'];
-    client.name = row['name'];
+    client.firstName = row['first_name'];
+    client.lastName = row['last_name'];
     client.email = row['email'];
     client.phone = row['phone'];
+    client.sex = row['sex'];
     client.address = row['address'];
     client.createdAt = row['created_at'];
     client.updatedAt = row['updated_at'];
@@ -25,17 +27,19 @@ export class ClientRepository {
   }
 
   async create(customerData: CreateClientDto): Promise<Client> {
-    const insertQuery = `INSERT INTO clients (uuid, name, email, phone, address) VALUES (?, ?, ?, ?, ?)`;
+    const insertQuery = `INSERT INTO clients (uuid, first_name, last_name, email, phone, sex, address) VALUES (?, ?, ?, ?, ?, ?, ?)`;
     return this.sqliteService
       .run(insertQuery, [
         uuidv4(),
-        customerData.name,
+        customerData.firstName,
+        customerData.lastName,
         customerData.email,
         customerData.phone,
+        customerData.sex,
         customerData.address,
       ])
       .then(() => {
-        const selectQuery = `SELECT id FROM clients ORDER BY id DESC LIMIT 1`;
+        const selectQuery = `SELECT * FROM clients ORDER BY id DESC LIMIT 1`;
         return this.sqliteService.get<Client>(selectQuery, undefined, this.rowMapper);
       });
   }
@@ -53,21 +57,25 @@ export class ClientRepository {
   async update(id: number, customerData: Partial<CreateClientDto>): Promise<Client> {
     const updateQuery = `
       UPDATE clients
-      SET name = COALESCE(?, name),
+      SET first_name = COALESCE(?, first_name),
+          last_name = COALESCE(?, last_name),
           email = COALESCE(?, email),
           phone = COALESCE(?, phone),
+          sex = COALESCE(?, sex),
           address = COALESCE(?, address)
       WHERE id = ?`;
     return this.sqliteService
       .run(updateQuery, [
-        customerData.name || null,
+        customerData.firstName || null,
+        customerData.lastName || null,
         customerData.email || null,
         customerData.phone || null,
+        customerData.sex || null,
         customerData.address || null,
         id,
       ])
       .then(() => {
-        const selectQuery = `SELECT * FROM clients WHERE id =?)`;
+        const selectQuery = `SELECT * FROM clients WHERE id =?`;
         return this.sqliteService.get<Client>(selectQuery, [id], this.rowMapper);
       });
   }

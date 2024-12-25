@@ -1,4 +1,4 @@
-import { UserSex } from "./user-sex.enum";
+import { Sex } from "../../shared/models/user-sex.enum";
 
 export class User {
   id: number;
@@ -8,7 +8,7 @@ export class User {
   password: string;
   firstName: string;
   lastName: string;
-  sex: UserSex;
+  sex: Sex;
   role: string;
   isActive: boolean;
   activationToken?: string;

@@ -14,7 +14,7 @@ import { MailHealthIndicator } from "./mail/mail-health.indicator";
   imports: [
     ThrottlerModule.forRoot([{
       ttl: 60000,
-      limit: 10,
+      limit: 100,
     }]),
     ConfigModule.forRoot(),
     MailerModule.forRootAsync({
