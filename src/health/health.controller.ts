@@ -8,11 +8,11 @@ import { MailHealthIndicator } from '../shared/mail/mail-health.indicator';
 @Controller('health')
 export class HealthController {
   constructor(
-    private health: HealthCheckService,
-    private dbHealthIndicator: DbHealthIndicator,
-    private usersHealthIndicator: UsersHealthIndicator,
-    private clientsHealthIndicator: ClientsHealthIndicator,
-    private mailHealthIndicator: MailHealthIndicator,
+    private readonly health: HealthCheckService,
+    private readonly dbHealthIndicator: DbHealthIndicator,
+    private readonly usersHealthIndicator: UsersHealthIndicator,
+    private readonly clientsHealthIndicator: ClientsHealthIndicator,
+    private readonly mailHealthIndicator: MailHealthIndicator,
   ) {}
 
   @Get()

@@ -17,7 +17,7 @@ import { UpdateUserSecurityDto } from '../users/dto/update-user-security.dto';
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
-    private jwtService: JwtService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {

@@ -18,9 +18,9 @@ import { ConfigService } from "@nestjs/config";
 @Injectable()
 export class UsersService {
   constructor(
-    private usersRepository: UsersRepository,
-    private mailService: MailService,
-    private configService: ConfigService,
+    private readonly usersRepository: UsersRepository,
+    private readonly mailService: MailService,
+    private readonly configService: ConfigService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {

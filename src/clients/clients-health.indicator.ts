@@ -6,7 +6,7 @@ import { ConfigService } from "@nestjs/config";
 @Injectable()
 export class ClientsHealthIndicator extends HealthIndicator {
   constructor(private readonly databaseService: DatabaseService,
-              private configService: ConfigService,) {
+              private readonly configService: ConfigService,) {
     super();
   }
 
