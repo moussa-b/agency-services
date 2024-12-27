@@ -1,16 +1,20 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
 import { ConfigService } from '@nestjs/config';
 import { Database } from 'sqlite3';
 import * as path from 'path';
+import { DatabaseService } from './database-service';
 
 @Injectable()
-export class SqliteService implements OnModuleInit {
+export class SqliteService extends DatabaseService implements OnModuleInit, OnModuleDestroy
+{
   private db: Database;
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(private readonly configService: ConfigService) {
+    super();
+  }
 
   onModuleInit() {
-    const databasePath = this.configService.get<string>('DATABASE_FILE');
+    const databasePath = this.configService.get<string>('DATABASE_FILE') || './database/agency_db.sqlite';
     this.db = new Database(databasePath, (err) => {
       if (err) {
         console.error('Error connecting to SQLite database:', err);
@@ -21,6 +25,10 @@ export class SqliteService implements OnModuleInit {
         );
       }
     });
+  }
+
+  onModuleDestroy() {
+    this.close();
   }
 
   async run(query: string, params: any[] = []): Promise<void> {

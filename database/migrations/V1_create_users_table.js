@@ -2,25 +2,27 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = function(knex) {
-  return knex.raw(`
-      CREATE TABLE IF NOT EXISTS users (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          uuid TEXT,
-          username TEXT UNIQUE NOT NULL,
-          email TEXT UNIQUE NOT NULL,
-          password TEXT,
-          first_name TEXT NOT NULL,
-          last_name TEXT NOT NULL,
-          sex TEXT,
-          role TEXT NOT NULL DEFAULT 'user',
-          is_active BOOLEAN DEFAULT 0,
-          activation_token TEXT,
-          reset_password_token TEXT,
-          reset_password_expires DATETIME,
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-          updated_at DATETIME
-          );`)
+exports.up = async function(knex) {
+  const exists = await knex.schema.hasTable('users');
+  if (!exists) {
+    return knex.schema.createTable('users', (table) => {
+      table.increments('id').primary();
+      table.text('uuid'); // uuid TEXT
+      table.string('username').unique().notNullable(); // username TEXT UNIQUE NOT NULL
+      table.string('email').unique().notNullable(); // email TEXT UNIQUE NOT NULL
+      table.string('password'); // password TEXT
+      table.string('first_name').notNullable(); // first_name TEXT NOT NULL
+      table.string('last_name').notNullable(); // last_name TEXT NOT NULL
+      table.string('sex'); // sex TEXT
+      table.string('role').notNullable().defaultTo('user'); // role TEXT NOT NULL DEFAULT 'user'
+      table.boolean('is_active').defaultTo(false); // is_active BOOLEAN DEFAULT 0
+      table.text('activation_token'); // activation_token TEXT
+      table.text('reset_password_token'); // reset_password_token TEXT
+      table.datetime('reset_password_expires'); // reset_password_expires DATETIME
+      table.datetime('created_at').defaultTo(knex.fn.now()); // created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      table.datetime('updated_at'); // updated_at DATETIME
+    });
+  }
 };
 
 /**
@@ -28,5 +30,5 @@ exports.up = function(knex) {
  * @returns { Promise<void> }
  */
 exports.down = function(knex) {
-    return knex.raw(`DROP TABLE IF EXISTS users;`);
+  return knex.schema.dropTableIfExists('users');
 };

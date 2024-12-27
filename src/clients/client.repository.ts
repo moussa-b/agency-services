@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Client } from './entities/client.entity';
 import { CreateClientDto } from './dto/create-client.dto';
-import { SqliteService } from '../shared/db/sqlite.service';
 import { v4 as uuidv4 } from 'uuid';
+import { DatabaseService } from '../shared/db/database-service';
 
 @Injectable()
 export class ClientRepository {
-  constructor(private readonly sqliteService: SqliteService) {}
+  constructor(private readonly databaseService: DatabaseService) {}
 
   rowMapper(row: any): Client {
     const client = new Client();
@@ -25,7 +25,7 @@ export class ClientRepository {
 
   async create(customerData: CreateClientDto): Promise<Client> {
     const insertQuery = `INSERT INTO clients (uuid, first_name, last_name, email, phone, sex, address) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-    return this.sqliteService
+    return this.databaseService
       .run(insertQuery, [
         uuidv4(),
         customerData.firstName,
@@ -37,7 +37,7 @@ export class ClientRepository {
       ])
       .then(() => {
         const selectQuery = `SELECT * FROM clients ORDER BY id DESC LIMIT 1`;
-        return this.sqliteService.get<Client>(
+        return this.databaseService.get<Client>(
           selectQuery,
           undefined,
           this.rowMapper,
@@ -46,7 +46,7 @@ export class ClientRepository {
   }
 
   async findAll(): Promise<Client[]> {
-    return this.sqliteService.all<Client>(
+    return this.databaseService.all<Client>(
       'SELECT * FROM clients ORDER BY created_at DESC',
       undefined,
       this.rowMapper,
@@ -54,7 +54,7 @@ export class ClientRepository {
   }
 
   async findOne(id: number): Promise<Client> {
-    return this.sqliteService.get<Client>(
+    return this.databaseService.get<Client>(
       'SELECT * FROM clients WHERE id = ?',
       [id],
       this.rowMapper,
@@ -74,7 +74,7 @@ export class ClientRepository {
           sex = COALESCE(?, sex),
           address = COALESCE(?, address)
       WHERE id = ?`;
-    return this.sqliteService
+    return this.databaseService
       .run(updateQuery, [
         customerData.firstName || null,
         customerData.lastName || null,
@@ -86,7 +86,7 @@ export class ClientRepository {
       ])
       .then(() => {
         const selectQuery = `SELECT * FROM clients WHERE id =?`;
-        return this.sqliteService.get<Client>(
+        return this.databaseService.get<Client>(
           selectQuery,
           [id],
           this.rowMapper,
@@ -96,10 +96,10 @@ export class ClientRepository {
 
   async remove(id: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      return this.sqliteService
+      return this.databaseService
         .run('DELETE FROM clients WHERE id = ?', [id])
         .then(() => {
-          this.sqliteService
+          this.databaseService
             .get<{ count: number }>(
               'SELECT COUNT(*) as count FROM clients WHERE id = ?',
               [id],

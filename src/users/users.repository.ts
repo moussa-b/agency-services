@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
-import { SqliteService } from '../shared/db/sqlite.service';
 import { v4 as uuidv4 } from 'uuid';
 import { UserRole } from './entities/user-role.enum';
 import { UpdateUserSecurityDto } from './dto/update-user-security.dto';
+import { DatabaseService } from '../shared/db/database-service';
 
 @Injectable()
 export class UsersRepository {
-  constructor(private readonly sqliteService: SqliteService) {}
+  constructor(private readonly databaseService: DatabaseService) {}
 
   rowMapper(row: any, includePassword = false, includeUsername = false): User {
     const user = new User();
@@ -44,7 +44,7 @@ export class UsersRepository {
     const insertQuery = `INSERT INTO users (
       uuid, username, email, password, first_name, last_name, sex, activation_token, role, is_active
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-    return this.sqliteService
+    return this.databaseService
       .run(insertQuery, [
         uuidv4(),
         userData.username || userData.email,
@@ -59,7 +59,7 @@ export class UsersRepository {
       ])
       .then(() => {
         const selectQuery = `SELECT * FROM users ORDER BY id DESC LIMIT 1`;
-        return this.sqliteService.get<User>(
+        return this.databaseService.get<User>(
           selectQuery,
           undefined,
           this.rowMapper,
@@ -68,7 +68,7 @@ export class UsersRepository {
   }
 
   async findAll(): Promise<User[]> {
-    return this.sqliteService.all<User>(
+    return this.databaseService.all<User>(
       'SELECT * FROM users ORDER BY created_at DESC',
       undefined,
       this.rowMapper,
@@ -80,7 +80,7 @@ export class UsersRepository {
     includePassword = false,
     includeUsername = false,
   ): Promise<User> {
-    return this.sqliteService.get<User>(
+    return this.databaseService.get<User>(
       'SELECT * FROM users WHERE id = ?',
       [id],
       (row) => this.rowMapper(row, includePassword, includeUsername),
@@ -99,7 +99,7 @@ export class UsersRepository {
           sex = COALESCE(?, sex),
           role = COALESCE(?, role)
       WHERE id = ?`;
-    return this.sqliteService
+    return this.databaseService
       .run(updateQuery, [
         customerData.email || null,
         customerData.firstName || null,
@@ -115,10 +115,10 @@ export class UsersRepository {
 
   async remove(id: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      return this.sqliteService
+      return this.databaseService
         .run('DELETE FROM users WHERE id = ?', [id])
         .then(() => {
-          this.sqliteService
+          this.databaseService
             .get<{ count: number }>(
               'SELECT COUNT(*) as count FROM users WHERE id = ?',
               [id],
@@ -131,7 +131,7 @@ export class UsersRepository {
   }
 
   async findByEmailOrUsername(email: string): Promise<User> {
-    return this.sqliteService.get<User>(
+    return this.databaseService.get<User>(
       'SELECT * FROM users WHERE email = ? OR username = ?',
       [email, email],
       (row: any) => this.rowMapper(row, true),
@@ -139,7 +139,7 @@ export class UsersRepository {
   }
 
   async findById(id: number): Promise<User> {
-    return this.sqliteService.get<User>(
+    return this.databaseService.get<User>(
       'SELECT * FROM users WHERE id = ?',
       [id],
       this.rowMapper,
@@ -147,7 +147,7 @@ export class UsersRepository {
   }
 
   async findByActivationToken(activationToken: string): Promise<User> {
-    return this.sqliteService.get<User>(
+    return this.databaseService.get<User>(
       'SELECT * FROM users WHERE activation_token = ?',
       [activationToken],
       this.rowMapper,
@@ -155,7 +155,7 @@ export class UsersRepository {
   }
 
   async findByResetPasswordToken(resetPasswordToken: string): Promise<User> {
-    return this.sqliteService.get<User>(
+    return this.databaseService.get<User>(
       'SELECT * FROM users WHERE reset_password_token = ? AND reset_password_expires > ?',
       [resetPasswordToken, new Date()],
       this.rowMapper,
@@ -164,13 +164,13 @@ export class UsersRepository {
 
   async activateUser(id: number, password: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      return this.sqliteService
+      return this.databaseService
         .run(
           'UPDATE users SET is_active = true, activation_token = NULL, password = ? WHERE id = ?',
           [password, id],
         )
         .then(() => {
-          this.sqliteService
+          this.databaseService
             .get<{ count: number }>(
               'SELECT COUNT(*) as count FROM users WHERE id = ? AND is_active = true',
               [id],
@@ -188,13 +188,13 @@ export class UsersRepository {
     expires: Date,
   ): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      return this.sqliteService
+      return this.databaseService
         .run(
           'UPDATE users SET reset_password_token = ?, reset_password_expires = ? WHERE id = ?',
           [token, expires, id],
         )
         .then(() => {
-          this.sqliteService
+          this.databaseService
             .get<{ count: number }>(
               'SELECT COUNT(*) as count FROM users WHERE id = ? AND reset_password_token IS NOT NULL AND reset_password_expires IS NOT NULL',
               [id],
@@ -208,13 +208,13 @@ export class UsersRepository {
 
   async resetPassword(id: number, hashedPassword: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      return this.sqliteService
+      return this.databaseService
         .run(
           'UPDATE users SET password = ?, reset_password_token = NULL, reset_password_expires = NULL WHERE id = ?',
           [hashedPassword, id],
         )
         .then(() => {
-          this.sqliteService
+          this.databaseService
             .get<{ count: number }>(
               'SELECT COUNT(*) as count FROM users WHERE id = ? AND reset_password_token IS NULL AND reset_password_expires IS NULL',
               [id],
@@ -231,7 +231,7 @@ export class UsersRepository {
     updateUserSecurityDto: UpdateUserSecurityDto,
   ): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      return this.sqliteService
+      return this.databaseService
         .run(
           `UPDATE users SET username = COALESCE(?, username),
           password = COALESCE(?, password)
@@ -247,7 +247,7 @@ export class UsersRepository {
           ],
         )
         .then(() => {
-          this.sqliteService
+          this.databaseService
             .get<{ count: number }>(
               'SELECT COUNT(*) as count FROM users WHERE id = ? AND username = ?',
               [userId, updateUserSecurityDto.username],

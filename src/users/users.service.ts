@@ -9,18 +9,18 @@ import { User } from './entities/user.entity';
 import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcrypt';
 import { MailService } from '../shared/mail/mail.service';
-import { ConfigService } from '@nestjs/config';
 import { ActivateUserDto } from './dto/activate-user.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateUserSecurityDto } from './dto/update-user-security.dto';
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class UsersService {
   constructor(
     private usersRepository: UsersRepository,
     private mailService: MailService,
-    private config: ConfigService,
+    private configService: ConfigService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -44,7 +44,7 @@ export class UsersService {
       isActive: false,
     });
 
-    const url = `${this.config.get<string>('FRONT_END_URL')}/activate?token=${activationToken}&username=${createUserDto.username || createUserDto.email}`;
+    const url = `${this.configService.get<string>('FRONT_END_URL')}/activate?token=${activationToken}&username=${createUserDto.username || createUserDto.email}`;
 
     await this.mailService.sendEmail(
       user.email,
@@ -139,7 +139,7 @@ export class UsersService {
     const expires = new Date();
     expires.setHours(expires.getHours() + 24);
     await this.setResetPasswordToken(user.id, resetPasswordToken, expires);
-    const url = `${this.config.get<string>('FRONT_END_URL')}/reset-password?token=${resetPasswordToken}&username=${user.username || user.email}`;
+    const url = `${this.configService.get<string>('FRONT_END_URL')}/reset-password?token=${resetPasswordToken}&username=${user.username || user.email}`;
     await this.mailService.sendEmail(user.email, 'Password Reset Request', {
       template: './reset-password',
       context: { name: user.firstName, url },

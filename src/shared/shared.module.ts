@@ -8,6 +8,8 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { DbHealthIndicator } from './db/db-health.indicator';
 import { APP_GUARD } from '@nestjs/core';
 import { MailHealthIndicator } from './mail/mail-health.indicator';
+import { MysqlService } from './db/mysql.service';
+import { DatabaseService } from './db/database-service';
 
 @Global()
 @Module({
@@ -50,11 +52,14 @@ import { MailHealthIndicator } from './mail/mail-health.indicator';
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
-    SqliteService,
     MailService,
     DbHealthIndicator,
     MailHealthIndicator,
+    {
+      provide: DatabaseService,
+      useClass: process.env.DATABASE_URL?.includes('mysql') ? MysqlService : SqliteService,
+    }
   ],
-  exports: [SqliteService, MailService, DbHealthIndicator, MailHealthIndicator],
+  exports: [DatabaseService, MailService, DbHealthIndicator, MailHealthIndicator],
 })
 export class SharedModule {}
