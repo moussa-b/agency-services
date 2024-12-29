@@ -1,8 +1,8 @@
 {
   "name": "agency-services",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
-  "author": "",
+  "author": "Moussa",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
