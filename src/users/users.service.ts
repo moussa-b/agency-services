@@ -76,11 +76,7 @@ export class UsersService {
   }
 
   async findByEmailOrUsername(email: string): Promise<User> {
-    const user = await this.usersRepository.findByEmailOrUsername(email);
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    return user;
+    return this.usersRepository.findByEmailOrUsername(email);
   }
 
   async findById(id: number): Promise<User> {
@@ -135,6 +131,9 @@ export class UsersService {
 
   async forgotPassword(email: string) {
     const user = await this.findByEmailOrUsername(email);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
     const resetPasswordToken = uuidv4();
     const expires = new Date();
     expires.setHours(expires.getHours() + 24);
