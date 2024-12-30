@@ -2,6 +2,7 @@
  * @type { Object.<string, import("knex").Knex.Config> }
  */
 const path = require('path');
+const { execSync } = require("child_process");
 const pathPrefix = process.env.NODE_ENV === 'production' ? '../..' : '..'
 require('dotenv').config({ path: pathPrefix + '/.env' });
 
@@ -16,6 +17,16 @@ function obfuscateDatabaseString(connectionString) {
   return connectionString.replace(/:\/\/(.*?):(.*?)@/, (match, user, password) => {
     return `://${user}:*****@`;
   });
+}
+
+try {
+  // Exécute la commande pour récupérer le chemin de npm
+  const npmPath = execSync(process.platform === 'win32' ? 'where npm' : 'which npm')
+    .toString()
+    .trim();
+  console.log(`Path to npm: ${npmPath}`);
+} catch (error) {
+  console.error('Error fetching npm path:', error.message);
 }
 
 module.exports = process.env.DATABASE_URL?.length > 0 ? {
