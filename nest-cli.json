@@ -19,7 +19,8 @@
         "include": "./shared/mail/templates/",
         "watchAssets": true
       }
-    ]
+    ],
+    "plugins": ["@nestjs/swagger"]
   },
   "generateOptions": {
     "spec": false

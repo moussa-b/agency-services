@@ -12,6 +12,8 @@ import { ActivateUserDto } from '../users/dto/activate-user.dto';
 import { ResetPasswordDto } from '../users/dto/reset-password.dto';
 import { UpdateUserDto } from '../users/dto/update-user.dto';
 import { UpdateUserSecurityDto } from '../users/dto/update-user-security.dto';
+import { ResponseStatus } from "../shared/dto/response-status.dto";
+import { AccessToken } from "./dto/access-token.dto";
 
 @Injectable()
 export class AuthService {
@@ -32,30 +34,30 @@ export class AuthService {
     return null;
   }
 
-  login(user: User) {
+  login(user: User): AccessToken {
     const payload = { username: user.username, sub: user.id, role: user.role };
     return {
-      access_token: this.jwtService.sign(payload),
+      accessToken: this.jwtService.sign(payload),
     };
   }
 
-  async activate(activateUserDto: ActivateUserDto) {
+  async activate(activateUserDto: ActivateUserDto): Promise<ResponseStatus> {
     return { status: await this.usersService.activateUser(activateUserDto) };
   }
 
-  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+  async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<ResponseStatus> {
     return { status: await this.usersService.resetPassword(resetPasswordDto) };
   }
 
-  async forgotPassword(email: string) {
+  async forgotPassword(email: string): Promise<ResponseStatus> {
     return { status: await this.usersService.forgotPassword(email) };
   }
 
-  getProfile(userId: number) {
+  getProfile(userId: number): Promise<User> {
     return this.usersService.findOne(userId, false, true);
   }
 
-  updateProfile(userId: number, updateUserDto: UpdateUserDto) {
+  updateProfile(userId: number, updateUserDto: UpdateUserDto): Promise<User> {
     delete updateUserDto.password;
     delete updateUserDto.role;
     delete updateUserDto.username;
@@ -65,7 +67,7 @@ export class AuthService {
   async updateProfileSecurity(
     userId: number,
     updateUserSecurityDto: UpdateUserSecurityDto,
-  ) {
+  ): Promise<ResponseStatus> {
     if (
       updateUserSecurityDto.newPassword !==
       updateUserSecurityDto.confirmPassword

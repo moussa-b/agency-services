@@ -17,25 +17,35 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UpdateClientDto } from '../clients/dto/update-client.dto';
 import { UserRole } from './entities/user-role.enum';
+import { User } from "./entities/user.entity";
+import { ResponseStatus } from "../shared/dto/response-status.dto";
+import { ApiOperation, ApiResponse } from "@nestjs/swagger";
 
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiOperation({ summary: 'Create a new user' })
+  @ApiResponse({ status: 201, description: 'The user has been successfully created.', type: User })
   @Post()
   @Roles(UserRole.ADMIN)
-  create(@Body() createUserDto: CreateUserDto) {
+  create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.usersService.create(createUserDto);
   }
 
+  @ApiOperation({ summary: 'Retrieve a list of all users' })
+  @ApiResponse({ status: 200, description: 'A list of users.', type: [User] })
   @Get()
-  findAll() {
+  findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
 
+  @ApiOperation({ summary: 'Retrieve a user by ID' })
+  @ApiResponse({ status: 200, description: 'The user data.', type: User })
+  @ApiResponse({ status: 404, description: 'User not found.' })
   @Get(':id')
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<User> {
     const client = await this.usersService.findOne(+id);
     if (!client) {
       throw new NotFoundException(`User with ID ${id} not found`);
@@ -43,15 +53,21 @@ export class UsersController {
     return client;
   }
 
+  @ApiOperation({ summary: 'Update a user' })
+  @ApiResponse({ status: 200, description: 'The user has been successfully updated', type: User })
+  @ApiResponse({ status: 404, description: 'User not found.' })
   @Patch(':id')
   @Roles(UserRole.ADMIN)
-  update(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto) {
+  update(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto): Promise<User> {
     return this.usersService.update(+id, updateClientDto);
   }
 
+  @ApiOperation({ summary: 'Delete a user by ID' })
+  @ApiResponse({ status: 200, description: 'The user has been successfully deleted.', type: ResponseStatus })
+  @ApiResponse({ status: 404, description: 'User not found.' })
   @Delete(':id')
   @Roles(UserRole.ADMIN)
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string): Promise<ResponseStatus> {
     if (+id === 1) {
       throw new BadRequestException(`User with ID ${id} can not be deleted`);
     }

@@ -6,6 +6,7 @@ import {
   IsString,
 } from 'class-validator';
 import { Sex } from '../../shared/models/user-sex.enum';
+import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateClientDto {
   @IsString()
@@ -25,7 +26,8 @@ export class CreateClientDto {
 
   @IsEnum(Sex)
   @IsOptional()
-  sex: string;
+  @ApiProperty({ enum: ['M', 'F']})
+  sex: Sex;
 
   @IsString()
   @IsOptional()

@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  Patch,
   Post,
   Request,
   UseGuards,
@@ -16,7 +17,13 @@ import { CurrentUser } from './decorators/current-user.decorator';
 import { UserRole } from '../users/entities/user-role.enum';
 import { UpdateUserDto } from '../users/dto/update-user.dto';
 import { UpdateUserSecurityDto } from '../users/dto/update-user-security.dto';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ResponseStatus } from '../shared/dto/response-status.dto';
+import { User } from '../users/entities/user.entity';
+import { AccessToken } from './dto/access-token.dto';
+import { ForgotPasswordDto } from "./dto/forgot-password.dto";
 
+@ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -24,49 +31,60 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @HttpCode(200)
-  async login(@Request() req) {
+  @ApiOperation({ summary: 'Login a user' })
+  async login(@Request() req): Promise<AccessToken> {
     return this.authService.login(req.user);
   }
 
   @Post('activate')
   @HttpCode(200)
-  async activate(@Body() activateUserDto: ActivateUserDto) {
+  @ApiOperation({ summary: 'Activate a user account' })
+  async activate(
+    @Body() activateUserDto: ActivateUserDto,
+  ): Promise<ResponseStatus> {
     return this.authService.activate(activateUserDto);
   }
 
   @Post('password/forgot')
-  async forgotPassword(@Body('email') email: string) {
-    return this.authService.forgotPassword(email);
+  @ApiOperation({ summary: 'Request a password reset' })
+  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto): Promise<ResponseStatus> {
+    return this.authService.forgotPassword(forgotPasswordDto.email);
   }
 
   @Post('password/reset')
-  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+  @ApiOperation({ summary: 'Reset the user password' })
+  async resetPassword(
+    @Body() resetPasswordDto: ResetPasswordDto,
+  ): Promise<ResponseStatus> {
     return this.authService.resetPassword(resetPasswordDto);
   }
 
   @Get('profile')
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get user profile' })
   async profile(
     @CurrentUser() user: { id: number; role?: UserRole; username?: string },
-  ) {
+  ): Promise<User> {
     return this.authService.getProfile(user.id);
   }
 
-  @Post('profile')
+  @Patch('profile')
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Update user profile' })
   async updateProfile(
     @Body() updateUserDto: UpdateUserDto,
     @CurrentUser() user: { id: number; role?: UserRole; username?: string },
-  ) {
+  ): Promise<User> {
     return this.authService.updateProfile(user.id, updateUserDto);
   }
 
-  @Post('profile/security')
+  @Patch('profile/security')
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Update user security settings' })
   async updateProfileSecurity(
     @Body() updateUserSecurityDto: UpdateUserSecurityDto,
     @CurrentUser() user: { id: number; role?: UserRole; username?: string },
-  ) {
+  ): Promise<ResponseStatus> {
     return this.authService.updateProfileSecurity(
       user.id,
       updateUserSecurityDto,

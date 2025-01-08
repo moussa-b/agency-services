@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { TransformInterceptor } from './transform/transform.interceptor';
+import { TransformInterceptor } from './shared/transform/transform.interceptor';
 import { ConfigService } from "@nestjs/config";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import * as basicAuth from 'express-basic-auth';
@@ -38,8 +38,22 @@ async function bootstrap() {
       .setDescription('The clients API description')
       .setVersion(require('../package.json').version)
       .build();
-    const documentFactory = () => SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup(configService.get<string>('SWAGGER_ROUTE', ''), app, documentFactory);
+    const document = () => SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup(
+      configService.get<string>('SWAGGER_ROUTE', ''),
+      app,
+      document,
+      {
+        swaggerOptions: {
+          tagsSorter: 'alpha',
+          operationsSorter: 'alpha',
+          filter: true,
+          filterOptions: {
+            deepSearch: true
+          },
+        },
+      },
+    );
   }
 
   await app.listen(process.env.PORT ?? 3000);
