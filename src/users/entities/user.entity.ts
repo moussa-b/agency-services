@@ -21,6 +21,8 @@ export class User {
   resetPasswordToken?: string;
   @ApiHideProperty()
   resetPasswordExpires?: Date;
+  createdBy?: number;
   createdAt: Date;
+  updatedBy?: number;
   updatedAt?: Date;
 }

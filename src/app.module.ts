@@ -5,6 +5,7 @@ import { SharedModule } from './shared/shared.module';
 import { AuthModule } from './auth/auth.module';
 import { HealthModule } from './health/health.module';
 import { VersionModule } from './version/version.module';
+import { CalendarEventsModule } from './calendar-events/calendar-events.module';
 
 @Global()
 @Module({
@@ -14,7 +15,8 @@ import { VersionModule } from './version/version.module';
     SharedModule,
     AuthModule,
     HealthModule,
-    VersionModule
+    VersionModule,
+    CalendarEventsModule
   ],
 })
 export class AppModule {}

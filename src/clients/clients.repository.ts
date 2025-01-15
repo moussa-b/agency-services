@@ -3,9 +3,10 @@ import { Client } from './entities/client.entity';
 import { CreateClientDto } from './dto/create-client.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { DatabaseService } from '../shared/db/database-service';
+import { UpdateClientDto } from "./dto/update-client.dto";
 
 @Injectable()
-export class ClientRepository {
+export class ClientsRepository {
   constructor(private readonly databaseService: DatabaseService) {}
 
   rowMapper(row: any): Client {
@@ -23,17 +24,17 @@ export class ClientRepository {
     return client;
   }
 
-  async create(customerData: CreateClientDto): Promise<Client> {
+  async create(createClientDto: CreateClientDto): Promise<Client> {
     const insertQuery = `INSERT INTO clients (uuid, first_name, last_name, email, phone, sex, address) VALUES (?, ?, ?, ?, ?, ?, ?)`;
     return this.databaseService
       .run(insertQuery, [
         uuidv4(),
-        customerData.firstName,
-        customerData.lastName,
-        customerData.email,
-        customerData.phone,
-        customerData.sex,
-        customerData.address,
+        createClientDto.firstName,
+        createClientDto.lastName,
+        createClientDto.email,
+        createClientDto.phone,
+        createClientDto.sex,
+        createClientDto.address,
       ])
       .then(() => {
         const selectQuery = `SELECT * FROM clients ORDER BY id DESC LIMIT 1`;
@@ -61,10 +62,7 @@ export class ClientRepository {
     );
   }
 
-  async update(
-    id: number,
-    customerData: Partial<CreateClientDto>,
-  ): Promise<Client> {
+  async update(id: number, updateClientDto: UpdateClientDto,): Promise<Client> {
     const updateQuery = `
       UPDATE clients
       SET first_name = COALESCE(?, first_name),
@@ -76,12 +74,12 @@ export class ClientRepository {
       WHERE id = ?`;
     return this.databaseService
       .run(updateQuery, [
-        customerData.firstName || null,
-        customerData.lastName || null,
-        customerData.email || null,
-        customerData.phone || null,
-        customerData.sex || null,
-        customerData.address || null,
+        updateClientDto.firstName || null,
+        updateClientDto.lastName || null,
+        updateClientDto.email || null,
+        updateClientDto.phone || null,
+        updateClientDto.sex || null,
+        updateClientDto.address || null,
         id,
       ])
       .then(() => {

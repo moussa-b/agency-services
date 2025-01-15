@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
-import { ClientRepository } from './client.repository';
+import { ClientsRepository } from './clients.repository';
 import { Client } from './entities/client.entity';
 
 @Injectable()
 export class ClientsService {
-  constructor(private readonly clientRepository: ClientRepository) {}
+  constructor(private readonly clientRepository: ClientsRepository) {}
 
   async create(createClientDto: CreateClientDto): Promise<Client> {
     return this.clientRepository.create(createClientDto);

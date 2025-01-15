@@ -9,6 +9,8 @@ export class Client {
   phone: string;
   sex?: Sex;
   address?: string;
+  createdBy?: number;
   createdAt: Date;
-  updatedAt: Date;
+  updatedBy?: number;
+  updatedAt?: Date;
 }

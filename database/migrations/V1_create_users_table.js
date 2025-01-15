@@ -19,8 +19,24 @@ exports.up = async function(knex) {
       table.text('activation_token'); // activation_token TEXT
       table.text('reset_password_token'); // reset_password_token TEXT
       table.datetime('reset_password_expires'); // reset_password_expires DATETIME
+      table.integer('created_by').unsigned().nullable();
       table.datetime('created_at').defaultTo(knex.fn.now()); // created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      table.integer('updated_by').unsigned().nullable();
       table.datetime('updated_at'); // updated_at DATETIME
+
+      // Indexes and Foreign Keys
+      table.index(['created_by'], 'fk_users_created_by');
+      table.index(['updated_by'], 'fk_users_updated_by');
+
+      table.foreign('created_by', 'fk_users_created_by')
+        .references('id')
+        .inTable('users')
+        .onDelete('SET NULL');
+
+      table.foreign('updated_by', 'fk_users_updated_by')
+        .references('id')
+        .inTable('users')
+        .onDelete('SET NULL');
     });
   }
 };
