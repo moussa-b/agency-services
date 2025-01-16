@@ -13,7 +13,7 @@ exports.up = function(knex) {
     table.dateTime('end_date').nullable();
     table.integer('status').unsigned().nullable();
     table.integer('reminder').unsigned().nullable();
-    table.dateTime('reminder_sent_at').unsigned().nullable();
+    table.dateTime('reminder_sent_at').nullable();
     table.integer('recurring').notNullable().defaultTo(0);
     table.integer('recurring_event_id').unsigned().nullable();
     table.integer('created_by').unsigned().nullable();
