@@ -16,16 +16,16 @@ export class CalendarEventsRepository {
     calendarEvent.uuid = row['uuid'];
     calendarEvent.title = row['title'];
     calendarEvent.description = row['description'];
-    calendarEvent.startDate = row['start_date'] ? DateUtils.createDateFromDatabaseDate(row['start_date']) : undefined;
-    calendarEvent.endDate = row['end_date'] ? DateUtils.createDateFromDatabaseDate(row['end_date']) : undefined;
+    calendarEvent.startDate = row['start_date'] instanceof Date ? row['start_date'] : DateUtils.createDateFromDatabaseDate(row['start_date']); // check instanceof Date because with MySQL row value is a Date and not a string
+    calendarEvent.endDate = row['end_date'] instanceof Date ? row['end_date'] : DateUtils.createDateFromDatabaseDate(row['end_date']);
     calendarEvent.status = row['status'];
     calendarEvent.reminder = row['reminder'];
     calendarEvent.reminderSentAt = row['reminder_sent_at'];
     calendarEvent.recurring = row['recurring'] === 1;
     calendarEvent.createdBy = row['created_by'];
-    calendarEvent.createdAt = row['created_at'] ? DateUtils.createDateFromDatabaseDate(row['created_at']) : undefined;
+    calendarEvent.createdAt = row['created_at'] instanceof Date ? row['created_at'] : DateUtils.createDateFromDatabaseDate(row['created_at']);
     calendarEvent.updatedBy = row['updated_by'];
-    calendarEvent.updatedAt = row['updated_at'] ? DateUtils.createDateFromDatabaseDate(row['updated_at']) : undefined;
+    calendarEvent.updatedAt = row['updated_at'] instanceof Date ? row['updated_at'] : DateUtils.createDateFromDatabaseDate(row['updated_at']);
     return calendarEvent;
   }
 

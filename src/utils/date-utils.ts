@@ -23,8 +23,11 @@ export class DateUtils {
    * Converts a database datetime string with format `yyyy-mm-dd hh:mm:ss` to a Date
    * @param date - The string object representing database-friendly format: `yyyy-mm-dd hh:mm:ss` to be parsed
    */
-  static createDateFromDatabaseDate(date: string): Date {
-    const [datePart, timePart] = date.split(' ');
+  static createDateFromDatabaseDate(date: string): Date | undefined {
+    if (!date) {
+      return undefined;
+    }
+    const [datePart, timePart] = date!.split(' ');
     const [year, month, day] = datePart.split('-').map(Number);
     const [hours, minutes, seconds] = timePart.split(':').map(Number);
     return new Date(year, month - 1, day, hours, minutes, seconds);

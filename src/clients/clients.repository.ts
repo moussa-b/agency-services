@@ -20,8 +20,8 @@ export class ClientsRepository {
     client.phone = row['phone'];
     client.sex = row['sex'];
     client.address = row['address'];
-    client.createdAt = row['created_at'] ? DateUtils.createDateFromDatabaseDate(row['created_at']) : undefined;
-    client.updatedAt = row['updated_at'] ? DateUtils.createDateFromDatabaseDate(row['updated_at']) : undefined;
+    client.createdAt = row['created_at'] instanceof Date ? row['created_at'] : DateUtils.createDateFromDatabaseDate(row['created_at']);
+    client.updatedAt = row['updated_at'] instanceof Date ? row['updated_at'] : DateUtils.createDateFromDatabaseDate(row['updated_at']);
     return client;
   }
 

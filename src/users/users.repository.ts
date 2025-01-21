@@ -30,8 +30,8 @@ export class UsersRepository {
     user.activationToken = row['activation_token'];
     user.resetPasswordToken = row['reset_password_token'];
     user.resetPasswordExpires = row['reset_password_expires'];
-    user.createdAt = row['created_at'] ? DateUtils.createDateFromDatabaseDate(row['created_at']) : undefined;
-    user.updatedAt = row['updated_at'] ? DateUtils.createDateFromDatabaseDate(row['updated_at']) : undefined;
+    user.createdAt = row['created_at'] instanceof Date ? row['created_at'] : DateUtils.createDateFromDatabaseDate(row['created_at']);
+    user.updatedAt = row['updated_at'] instanceof Date ? row['updated_at'] : DateUtils.createDateFromDatabaseDate(row['updated_at']);
     return user;
   }
 
