@@ -1,4 +1,4 @@
-import { CalendarEventStatus } from "./calendar-event-status.enum";
+import { CalendarEventStatus } from './calendar-event-status.enum';
 
 export class CalendarEvent {
   id: number;

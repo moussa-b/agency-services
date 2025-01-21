@@ -19,6 +19,8 @@ import { UserRole } from '../users/entities/user-role.enum';
 import { Client } from "./entities/client.entity";
 import { ResponseStatus } from "../shared/dto/response-status.dto";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { CurrentUser } from "../auth/decorators/current-user.decorator";
+import { ConnectedUser } from "../shared/models/current-user";
 
 @ApiTags('Clients')
 @Controller('clients')
@@ -30,7 +32,8 @@ export class ClientsController {
   @ApiResponse({ status: 201, description: 'The client has been successfully created.', type: Client })
   @Post()
   @Roles(UserRole.ADMIN)
-  create(@Body() createClientDto: CreateClientDto): Promise<Client> {
+  create(@Body() createClientDto: CreateClientDto, @CurrentUser() user: ConnectedUser): Promise<Client> {
+    createClientDto.createdBy = user.id;
     return this.clientsService.create(createClientDto);
   }
 
@@ -61,7 +64,8 @@ export class ClientsController {
   @ApiResponse({ status: 404, description: 'Client not found.' })
   @Patch(':id')
   @Roles(UserRole.ADMIN)
-  async update(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto): Promise<Client> {
+  async update(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto, @CurrentUser() user: ConnectedUser): Promise<Client> {
+    updateClientDto.updatedBy = user.id;
     const client = await this.clientsService.findOne(+id);
     if (!client) {
       throw new NotFoundException(`Client with ID ${id} not found`);

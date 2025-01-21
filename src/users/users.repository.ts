@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { UserRole } from './entities/user-role.enum';
 import { UpdateUserSecurityDto } from './dto/update-user-security.dto';
 import { DatabaseService } from '../shared/db/database-service';
+import { DateUtils } from "../utils/date-utils";
 
 @Injectable()
 export class UsersRepository {
@@ -29,8 +30,8 @@ export class UsersRepository {
     user.activationToken = row['activation_token'];
     user.resetPasswordToken = row['reset_password_token'];
     user.resetPasswordExpires = row['reset_password_expires'];
-    user.createdAt = row['created_at'];
-    user.updatedAt = row['updated_at'];
+    user.createdAt = row['created_at'] ? DateUtils.createDateFromDatabaseDate(row['created_at']) : undefined;
+    user.updatedAt = row['updated_at'] ? DateUtils.createDateFromDatabaseDate(row['updated_at']) : undefined;
     return user;
   }
 
@@ -42,8 +43,8 @@ export class UsersRepository {
     },
   ): Promise<User> {
     const insertQuery = `INSERT INTO users (
-      uuid, username, email, password, first_name, last_name, sex, activation_token, role, is_active
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+      uuid, username, email, password, first_name, last_name, sex, activation_token, role, is_active, created_by
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     return this.databaseService
       .run(insertQuery, [
         uuidv4(),
@@ -56,6 +57,7 @@ export class UsersRepository {
         userData.activationToken,
         userData.role || UserRole.USER,
         userData.isActive,
+        userData.createdBy,
       ])
       .then(() => {
         const selectQuery = `SELECT * FROM users ORDER BY id DESC LIMIT 1`;
@@ -97,7 +99,8 @@ export class UsersRepository {
           first_name = COALESCE(?, first_name),
           last_name = COALESCE(?, last_name),
           sex = COALESCE(?, sex),
-          role = COALESCE(?, role)
+          role = COALESCE(?, role),
+          updated_by = ?
       WHERE id = ?`;
     return this.databaseService
       .run(updateQuery, [
@@ -106,6 +109,7 @@ export class UsersRepository {
         customerData.lastName || null,
         customerData.sex || null,
         customerData.role || null,
+        customerData.updatedBy,
         id,
       ])
       .then(() => {

@@ -4,6 +4,7 @@ import { CreateCalendarEventDto } from './dto/create-calendar-event.dto';
 import { CalendarEvent } from './entities/calendar-event.entity';
 import { UpdateCalendarEventDto } from './dto/update-calendar-event.dto';
 import { v4 as uuidv4 } from "uuid";
+import { DateUtils } from "../utils/date-utils";
 
 @Injectable()
 export class CalendarEventsRepository {
@@ -15,16 +16,16 @@ export class CalendarEventsRepository {
     calendarEvent.uuid = row['uuid'];
     calendarEvent.title = row['title'];
     calendarEvent.description = row['description'];
-    calendarEvent.startDate = row['start_date'];
-    calendarEvent.endDate = row['end_date'];
+    calendarEvent.startDate = row['start_date'] ? DateUtils.createDateFromDatabaseDate(row['start_date']) : undefined;
+    calendarEvent.endDate = row['end_date'] ? DateUtils.createDateFromDatabaseDate(row['end_date']) : undefined;
     calendarEvent.status = row['status'];
     calendarEvent.reminder = row['reminder'];
     calendarEvent.reminderSentAt = row['reminder_sent_at'];
     calendarEvent.recurring = row['recurring'] === 1;
     calendarEvent.createdBy = row['created_by'];
-    calendarEvent.createdAt = row['created_at'];
+    calendarEvent.createdAt = row['created_at'] ? DateUtils.createDateFromDatabaseDate(row['created_at']) : undefined;
     calendarEvent.updatedBy = row['updated_by'];
-    calendarEvent.updatedAt = row['updated_at'];
+    calendarEvent.updatedAt = row['updated_at'] ? DateUtils.createDateFromDatabaseDate(row['updated_at']) : undefined;
     return calendarEvent;
   }
 
@@ -37,8 +38,8 @@ export class CalendarEventsRepository {
         createCalendarEventDto.title,
         createCalendarEventDto.description,
         createCalendarEventDto.createdBy,
-        createCalendarEventDto.startDate,
-        createCalendarEventDto.endDate,
+        DateUtils.createDateToDatabaseFormat(createCalendarEventDto.startDate, createCalendarEventDto.startHour),
+        DateUtils.createDateToDatabaseFormat(createCalendarEventDto.endDate, createCalendarEventDto.endHour),
         createCalendarEventDto.status,
         createCalendarEventDto.reminder || null,
         createCalendarEventDto.recurring ? 1 : 0,
@@ -86,8 +87,8 @@ export class CalendarEventsRepository {
       .run(updateQuery, [
         updateCalendarEventDto.title || null,
         updateCalendarEventDto.description || null,
-        updateCalendarEventDto.startDate || null,
-        updateCalendarEventDto.endDate || null,
+        updateCalendarEventDto.startDate && updateCalendarEventDto.startHour ? DateUtils.createDateToDatabaseFormat(updateCalendarEventDto.startDate, updateCalendarEventDto.startHour) : null,
+        updateCalendarEventDto.endDate && updateCalendarEventDto.endHour ? DateUtils.createDateToDatabaseFormat(updateCalendarEventDto.endDate, updateCalendarEventDto.endHour) : null,
         updateCalendarEventDto.status || null,
         updateCalendarEventDto.reminder || null,
         updateCalendarEventDto.updatedBy,

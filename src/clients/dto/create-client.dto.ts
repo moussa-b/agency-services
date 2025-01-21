@@ -32,4 +32,8 @@ export class CreateClientDto {
   @IsString()
   @IsOptional()
   address?: string;
+
+  createdBy?: number;
+
+  updatedBy?: number;
 }

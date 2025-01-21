@@ -20,6 +20,8 @@ import { UserRole } from './entities/user-role.enum';
 import { User } from "./entities/user.entity";
 import { ResponseStatus } from "../shared/dto/response-status.dto";
 import { ApiOperation, ApiResponse } from "@nestjs/swagger";
+import { CurrentUser } from "../auth/decorators/current-user.decorator";
+import { ConnectedUser } from "../shared/models/current-user";
 
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -30,7 +32,8 @@ export class UsersController {
   @ApiResponse({ status: 201, description: 'The user has been successfully created.', type: User })
   @Post()
   @Roles(UserRole.ADMIN)
-  create(@Body() createUserDto: CreateUserDto): Promise<User> {
+  create(@Body() createUserDto: CreateUserDto, @CurrentUser() user: ConnectedUser): Promise<User> {
+    createUserDto.createdBy = user.id;
     return this.usersService.create(createUserDto);
   }
 
@@ -58,7 +61,8 @@ export class UsersController {
   @ApiResponse({ status: 404, description: 'User not found.' })
   @Patch(':id')
   @Roles(UserRole.ADMIN)
-  update(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto): Promise<User> {
+  update(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto, @CurrentUser() user: ConnectedUser): Promise<User> {
+    updateClientDto.updatedBy = user.id;
     return this.usersService.update(+id, updateClientDto);
   }
 

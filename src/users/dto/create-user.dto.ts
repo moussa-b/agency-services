@@ -39,4 +39,8 @@ export class CreateUserDto {
   @IsEnum(UserRole)
   @IsOptional()
   role: UserRole;
+
+  createdBy?: number;
+
+  updatedBy?: number;
 }

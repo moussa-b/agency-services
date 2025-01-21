@@ -4,6 +4,7 @@ import { CreateClientDto } from './dto/create-client.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { DatabaseService } from '../shared/db/database-service';
 import { UpdateClientDto } from "./dto/update-client.dto";
+import { DateUtils } from "../utils/date-utils";
 
 @Injectable()
 export class ClientsRepository {
@@ -19,13 +20,13 @@ export class ClientsRepository {
     client.phone = row['phone'];
     client.sex = row['sex'];
     client.address = row['address'];
-    client.createdAt = row['created_at'];
-    client.updatedAt = row['updated_at'];
+    client.createdAt = row['created_at'] ? DateUtils.createDateFromDatabaseDate(row['created_at']) : undefined;
+    client.updatedAt = row['updated_at'] ? DateUtils.createDateFromDatabaseDate(row['updated_at']) : undefined;
     return client;
   }
 
   async create(createClientDto: CreateClientDto): Promise<Client> {
-    const insertQuery = `INSERT INTO clients (uuid, first_name, last_name, email, phone, sex, address) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    const insertQuery = `INSERT INTO clients (uuid, first_name, last_name, email, phone, sex, address, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
     return this.databaseService
       .run(insertQuery, [
         uuidv4(),
@@ -35,6 +36,7 @@ export class ClientsRepository {
         createClientDto.phone,
         createClientDto.sex,
         createClientDto.address,
+        createClientDto.createdBy
       ])
       .then(() => {
         const selectQuery = `SELECT * FROM clients ORDER BY id DESC LIMIT 1`;
@@ -70,7 +72,8 @@ export class ClientsRepository {
           email = COALESCE(?, email),
           phone = COALESCE(?, phone),
           sex = COALESCE(?, sex),
-          address = COALESCE(?, address)
+          address = COALESCE(?, address),
+          updated_by = ?
       WHERE id = ?`;
     return this.databaseService
       .run(updateQuery, [
@@ -80,6 +83,7 @@ export class ClientsRepository {
         updateClientDto.phone || null,
         updateClientDto.sex || null,
         updateClientDto.address || null,
+        updateClientDto.updatedBy,
         id,
       ])
       .then(() => {
