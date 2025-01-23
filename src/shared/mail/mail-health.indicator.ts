@@ -1,17 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { HealthIndicator, HealthIndicatorResult } from '@nestjs/terminus';
-import { MailerService } from '@nestjs-modules/mailer';
+import { MailService } from './mail.service';
 
 @Injectable()
 export class MailHealthIndicator extends HealthIndicator {
-  constructor(private readonly mailerService: MailerService) {
+  constructor(private mailService: MailService) {
     super();
   }
 
   async isHealthy(): Promise<HealthIndicatorResult> {
-    return this.getStatus(
-      'mail',
-      await this.mailerService.verifyAllTransporters(),
-    );
+    return this.getStatus('mail', await this.mailService.verifyTransporter());
   }
 }
