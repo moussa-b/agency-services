@@ -1,16 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { HealthIndicator, HealthIndicatorResult } from '@nestjs/terminus';
+import {
+  HealthIndicatorResult,
+  HealthIndicatorService,
+} from '@nestjs/terminus';
 import { DatabaseService } from './database-service';
 
 @Injectable()
-export class DbHealthIndicator extends HealthIndicator {
-  constructor(private readonly databaseService: DatabaseService) {
-    super();
-  }
+export class DbHealthIndicator {
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly healthIndicatorService: HealthIndicatorService,
+  ) {}
 
   async isHealthy(): Promise<HealthIndicatorResult> {
-    const result: { test: number } =
-      await this.databaseService.get('SELECT 1 AS test');
-    return this.getStatus('db', result?.test === 1);
+    const result: { count: number } =
+      await this.databaseService.get('SELECT 1 AS count');
+    const indicator = this.healthIndicatorService.check('db');
+    if (result?.count !== 1) {
+      return indicator.down({
+        isDbConnected: false,
+      });
+    }
+    return indicator.up({
+      isDbConnected: true,
+    });
   }
 }

@@ -8,6 +8,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { MailHealthIndicator } from './mail/mail-health.indicator';
 import { MysqlService } from './db/mysql.service';
 import { DatabaseService } from './db/database-service';
+import { HealthIndicatorService } from '@nestjs/terminus';
 
 @Global()
 @Module({
@@ -34,6 +35,7 @@ import { DatabaseService } from './db/database-service';
         ? MysqlService
         : SqliteService,
     },
+    HealthIndicatorService,
   ],
   exports: [
     DatabaseService,

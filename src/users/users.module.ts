@@ -4,6 +4,7 @@ import { UsersController } from './users.controller';
 import { UsersRepository } from './users.repository';
 import { UsersHealthIndicator } from './users-health.indicator';
 import { ConfigService } from '@nestjs/config';
+import { HealthIndicatorService } from '@nestjs/terminus';
 
 @Module({
   controllers: [UsersController],
@@ -12,6 +13,7 @@ import { ConfigService } from '@nestjs/config';
     UsersService,
     UsersHealthIndicator,
     ConfigService,
+    HealthIndicatorService,
   ],
   exports: [UsersService, UsersHealthIndicator],
 })
