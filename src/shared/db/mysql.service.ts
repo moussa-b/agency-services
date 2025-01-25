@@ -1,10 +1,12 @@
-import { Injectable, OnModuleDestroy, OnModuleInit } from "@nestjs/common";
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { createPool, Pool, PoolConnection } from 'mysql2/promise';
-import { ConfigService } from "@nestjs/config";
-import { DatabaseService } from "./database-service";
+import { ConfigService } from '@nestjs/config';
+import { DatabaseService } from './database-service';
 
 @Injectable()
-export class MysqlService extends DatabaseService implements OnModuleInit, OnModuleDestroy
+export class MysqlService
+  extends DatabaseService
+  implements OnModuleInit, OnModuleDestroy
 {
   private pool?: Pool;
 
@@ -23,7 +25,7 @@ export class MysqlService extends DatabaseService implements OnModuleInit, OnMod
   async run(query: string, params: any[] = []): Promise<void> {
     try {
       const connection = await this.pool.getConnection();
-      params?.forEach((param: any, index: number)=> {
+      params?.forEach((param: any, index: number) => {
         if (param === undefined) {
           params[index] = null;
         }
@@ -40,7 +42,7 @@ export class MysqlService extends DatabaseService implements OnModuleInit, OnMod
     params: any[] = [],
     rowMapper: (row: any) => T = (row) => row,
   ): Promise<T> {
-    params?.forEach((param: any, index: number)=> {
+    params?.forEach((param: any, index: number) => {
       if (param === undefined) {
         params[index] = null;
       }
@@ -59,7 +61,7 @@ export class MysqlService extends DatabaseService implements OnModuleInit, OnMod
     params: any[] = [],
     rowMapper: (row: any) => T = (row) => row,
   ): Promise<T[]> {
-    params?.forEach((param: any, index: number)=> {
+    params?.forEach((param: any, index: number) => {
       if (param === undefined) {
         params[index] = null;
       }
@@ -72,9 +74,11 @@ export class MysqlService extends DatabaseService implements OnModuleInit, OnMod
     }
   }
 
-  async transaction(queries: { query: string; params: any[] }[]): Promise<void> {
+  async transaction(
+    queries: { query: string; params: any[] }[],
+  ): Promise<void> {
     queries.forEach((q: { query: string; params: any[] }) => {
-      q.params?.forEach((param: any, index: number)=> {
+      q.params?.forEach((param: any, index: number) => {
         if (param === undefined) {
           q.params[index] = null;
         }

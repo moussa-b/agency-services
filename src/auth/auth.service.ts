@@ -12,8 +12,8 @@ import { ActivateUserDto } from '../users/dto/activate-user.dto';
 import { ResetPasswordDto } from '../users/dto/reset-password.dto';
 import { UpdateUserDto } from '../users/dto/update-user.dto';
 import { UpdateUserSecurityDto } from '../users/dto/update-user-security.dto';
-import { ResponseStatus } from "../shared/dto/response-status.dto";
-import { AccessToken } from "./dto/access-token.dto";
+import { ResponseStatus } from '../shared/dto/response-status.dto';
+import { AccessToken } from './dto/access-token.dto';
 
 @Injectable()
 export class AuthService {
@@ -45,7 +45,9 @@ export class AuthService {
     return { status: await this.usersService.activateUser(activateUserDto) };
   }
 
-  async resetPassword(resetPasswordDto: ResetPasswordDto): Promise<ResponseStatus> {
+  async resetPassword(
+    resetPasswordDto: ResetPasswordDto,
+  ): Promise<ResponseStatus> {
     return { status: await this.usersService.resetPassword(resetPasswordDto) };
   }
 

@@ -13,7 +13,7 @@ import { ActivateUserDto } from './dto/activate-user.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateUserSecurityDto } from './dto/update-user-security.dto';
-import { ConfigService } from "@nestjs/config";
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UsersService {

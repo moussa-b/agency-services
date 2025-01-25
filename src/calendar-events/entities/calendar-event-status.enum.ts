@@ -3,5 +3,5 @@ export enum CalendarEventStatus {
   CONFIRMED = 'CONFIRMED',
   FINISHED = 'FINISHED',
   CANCELLED = 'CANCELLED',
-  MISSED = 'MISSED'
+  MISSED = 'MISSED',
 }

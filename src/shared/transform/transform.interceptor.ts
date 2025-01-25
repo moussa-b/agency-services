@@ -19,7 +19,11 @@ export class TransformInterceptor implements NestInterceptor {
   private cleanNullValues(data: any): any {
     if (Array.isArray(data)) {
       return data.map((item) => this.cleanNullValues(item));
-    } else if (typeof data === 'object' && data !== null && !(data instanceof Date)) {
+    } else if (
+      typeof data === 'object' &&
+      data !== null &&
+      !(data instanceof Date)
+    ) {
       return Object.entries(data).reduce((acc, [key, value]) => {
         if (value !== null) {
           acc[key] = this.cleanNullValues(value);

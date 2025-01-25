@@ -17,11 +17,11 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UpdateClientDto } from '../clients/dto/update-client.dto';
 import { UserRole } from './entities/user-role.enum';
-import { User } from "./entities/user.entity";
-import { ResponseStatus } from "../shared/dto/response-status.dto";
-import { ApiOperation, ApiResponse } from "@nestjs/swagger";
-import { CurrentUser } from "../auth/decorators/current-user.decorator";
-import { ConnectedUser } from "../shared/models/current-user";
+import { User } from './entities/user.entity';
+import { ResponseStatus } from '../shared/dto/response-status.dto';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { ConnectedUser } from '../shared/models/current-user';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -29,10 +29,17 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @ApiOperation({ summary: 'Create a new user' })
-  @ApiResponse({ status: 201, description: 'The user has been successfully created.', type: User })
+  @ApiResponse({
+    status: 201,
+    description: 'The user has been successfully created.',
+    type: User,
+  })
   @Post()
   @Roles(UserRole.ADMIN)
-  create(@Body() createUserDto: CreateUserDto, @CurrentUser() user: ConnectedUser): Promise<User> {
+  create(
+    @Body() createUserDto: CreateUserDto,
+    @CurrentUser() user: ConnectedUser,
+  ): Promise<User> {
     createUserDto.createdBy = user.id;
     return this.usersService.create(createUserDto);
   }
@@ -57,17 +64,29 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'Update a user' })
-  @ApiResponse({ status: 200, description: 'The user has been successfully updated', type: User })
+  @ApiResponse({
+    status: 200,
+    description: 'The user has been successfully updated',
+    type: User,
+  })
   @ApiResponse({ status: 404, description: 'User not found.' })
   @Patch(':id')
   @Roles(UserRole.ADMIN)
-  update(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto, @CurrentUser() user: ConnectedUser): Promise<User> {
+  update(
+    @Param('id') id: string,
+    @Body() updateClientDto: UpdateClientDto,
+    @CurrentUser() user: ConnectedUser,
+  ): Promise<User> {
     updateClientDto.updatedBy = user.id;
     return this.usersService.update(+id, updateClientDto);
   }
 
   @ApiOperation({ summary: 'Delete a user by ID' })
-  @ApiResponse({ status: 200, description: 'The user has been successfully deleted.', type: ResponseStatus })
+  @ApiResponse({
+    status: 200,
+    description: 'The user has been successfully deleted.',
+    type: ResponseStatus,
+  })
   @ApiResponse({ status: 404, description: 'User not found.' })
   @Delete(':id')
   @Roles(UserRole.ADMIN)

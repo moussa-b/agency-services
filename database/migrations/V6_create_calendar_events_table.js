@@ -2,8 +2,8 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = function(knex) {
-  return knex.schema.createTable('calendar_events', function(table) {
+exports.up = function (knex) {
+  return knex.schema.createTable('calendar_events', function (table) {
     table.increments('id').primary();
     table.string('uuid', 40).notNullable().unique();
     table.string('title', 512).notNullable();
@@ -26,23 +26,26 @@ exports.up = function(knex) {
     table.index(['created_by'], 'fk_calendar_events_created_by');
     table.index(['updated_by'], 'fk_calendar_events_updated_by');
 
-    table.foreign('user_id', 'fk_calendar_events_users')
+    table
+      .foreign('user_id', 'fk_calendar_events_users')
       .references('id')
       .inTable('users')
       .onDelete('CASCADE');
 
-    table.foreign('created_by', 'fk_calendar_events_created_by')
+    table
+      .foreign('created_by', 'fk_calendar_events_created_by')
       .references('id')
       .inTable('users')
       .onDelete('SET NULL');
 
-    table.foreign('updated_by', 'fk_calendar_events_updated_by')
+    table
+      .foreign('updated_by', 'fk_calendar_events_updated_by')
       .references('id')
       .inTable('users')
       .onDelete('SET NULL');
   });
 };
 
-exports.down = function(knex) {
+exports.down = function (knex) {
   return knex.schema.dropTable('calendar_events');
 };

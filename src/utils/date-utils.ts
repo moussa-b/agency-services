@@ -13,7 +13,10 @@ export class DateUtils {
    * Combines a date string in `dd.mm.yyyy` format and a time string in `hh:mm` format
    * into database date format.
    */
-  static createDateToDatabaseFormat(startDate: string, startHour: string): string {
+  static createDateToDatabaseFormat(
+    startDate: string,
+    startHour: string,
+  ): string {
     const [day, month, year] = startDate.split('.');
     const isoString = `${year}-${month}-${day}T${startHour}`;
     return DateUtils.formatToDatabaseFormat(new Date(isoString));

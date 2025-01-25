@@ -2,7 +2,7 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = async function(knex) {
+exports.up = async function (knex) {
   const exists = await knex.schema.hasTable('users');
   if (!exists) {
     return knex.schema.createTable('users', (table) => {
@@ -28,12 +28,14 @@ exports.up = async function(knex) {
       table.index(['created_by'], 'fk_users_created_by');
       table.index(['updated_by'], 'fk_users_updated_by');
 
-      table.foreign('created_by', 'fk_users_created_by')
+      table
+        .foreign('created_by', 'fk_users_created_by')
         .references('id')
         .inTable('users')
         .onDelete('SET NULL');
 
-      table.foreign('updated_by', 'fk_users_updated_by')
+      table
+        .foreign('updated_by', 'fk_users_updated_by')
         .references('id')
         .inTable('users')
         .onDelete('SET NULL');
@@ -45,6 +47,6 @@ exports.up = async function(knex) {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = function(knex) {
+exports.down = function (knex) {
   return knex.schema.dropTableIfExists('users');
 };

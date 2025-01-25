@@ -16,7 +16,7 @@ import { CalendarEventsModule } from './calendar-events/calendar-events.module';
     AuthModule,
     HealthModule,
     VersionModule,
-    CalendarEventsModule
+    CalendarEventsModule,
   ],
 })
 export class AppModule {}

@@ -20,8 +20,8 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ResponseStatus } from '../shared/dto/response-status.dto';
 import { User } from '../users/entities/user.entity';
 import { AccessToken } from './dto/access-token.dto';
-import { ForgotPasswordDto } from "./dto/forgot-password.dto";
-import { ConnectedUser } from "../shared/models/current-user";
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ConnectedUser } from '../shared/models/current-user';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -47,7 +47,9 @@ export class AuthController {
 
   @Post('password/forgot')
   @ApiOperation({ summary: 'Request a password reset' })
-  async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto): Promise<ResponseStatus> {
+  async forgotPassword(
+    @Body() forgotPasswordDto: ForgotPasswordDto,
+  ): Promise<ResponseStatus> {
     return this.authService.forgotPassword(forgotPasswordDto.email);
   }
 
@@ -69,14 +71,20 @@ export class AuthController {
   @Patch('profile')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Update user profile' })
-  async updateProfile(@Body() updateUserDto: UpdateUserDto, @CurrentUser() user: ConnectedUser,): Promise<User> {
+  async updateProfile(
+    @Body() updateUserDto: UpdateUserDto,
+    @CurrentUser() user: ConnectedUser,
+  ): Promise<User> {
     return this.authService.updateProfile(user.id, updateUserDto);
   }
 
   @Patch('profile/security')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Update user security settings' })
-  async updateProfileSecurity(@Body() updateUserSecurityDto: UpdateUserSecurityDto, @CurrentUser() user: ConnectedUser): Promise<ResponseStatus> {
+  async updateProfileSecurity(
+    @Body() updateUserSecurityDto: UpdateUserSecurityDto,
+    @CurrentUser() user: ConnectedUser,
+  ): Promise<ResponseStatus> {
     return this.authService.updateProfileSecurity(
       user.id,
       updateUserSecurityDto,

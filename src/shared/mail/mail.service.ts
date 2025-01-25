@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import { Transporter } from 'nodemailer';
 import hbs from 'nodemailer-express-handlebars';
 import * as path from 'path';
 import { ConfigService } from '@nestjs/config';
-import { Transporter } from 'nodemailer';
 
 @Injectable()
 export class MailService {

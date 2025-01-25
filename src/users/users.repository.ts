@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { UserRole } from './entities/user-role.enum';
 import { UpdateUserSecurityDto } from './dto/update-user-security.dto';
 import { DatabaseService } from '../shared/db/database-service';
-import { DateUtils } from "../utils/date-utils";
+import { DateUtils } from '../utils/date-utils';
 
 @Injectable()
 export class UsersRepository {
@@ -30,8 +30,14 @@ export class UsersRepository {
     user.activationToken = row['activation_token'];
     user.resetPasswordToken = row['reset_password_token'];
     user.resetPasswordExpires = row['reset_password_expires'];
-    user.createdAt = row['created_at'] instanceof Date ? row['created_at'] : DateUtils.createDateFromDatabaseDate(row['created_at']);
-    user.updatedAt = row['updated_at'] instanceof Date ? row['updated_at'] : DateUtils.createDateFromDatabaseDate(row['updated_at']);
+    user.createdAt =
+      row['created_at'] instanceof Date
+        ? row['created_at']
+        : DateUtils.createDateFromDatabaseDate(row['created_at']);
+    user.updatedAt =
+      row['updated_at'] instanceof Date
+        ? row['updated_at']
+        : DateUtils.createDateFromDatabaseDate(row['updated_at']);
     return user;
   }
 

@@ -1,6 +1,6 @@
 import { Sex } from '../../shared/models/user-sex.enum';
-import { ApiHideProperty, ApiProperty } from "@nestjs/swagger";
-import { UserRole } from "./user-role.enum";
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
+import { UserRole } from './user-role.enum';
 
 export class User {
   id: number;
@@ -12,7 +12,7 @@ export class User {
   firstName: string;
   lastName: string;
   sex: Sex;
-  @ApiProperty({ enum: ['ADMIN', 'MANAGER', 'USER']})
+  @ApiProperty({ enum: ['ADMIN', 'MANAGER', 'USER'] })
   role: UserRole;
   isActive: boolean;
   @ApiHideProperty()

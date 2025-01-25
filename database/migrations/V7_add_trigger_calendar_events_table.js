@@ -2,7 +2,7 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = function(knex) {
+exports.up = function (knex) {
   if (process.env.DATABASE_URL?.length > 0) {
     return knex.schema.raw(`
     CREATE TRIGGER update_calendar_events_updated_at BEFORE UPDATE ON calendar_events
@@ -25,6 +25,6 @@ exports.up = function(knex) {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = function(knex) {
+exports.down = function (knex) {
   return knex.raw(`DROP TRIGGER IF EXISTS update_calendar_events_updated_at;`);
 };

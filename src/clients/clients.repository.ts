@@ -3,8 +3,8 @@ import { Client } from './entities/client.entity';
 import { CreateClientDto } from './dto/create-client.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { DatabaseService } from '../shared/db/database-service';
-import { UpdateClientDto } from "./dto/update-client.dto";
-import { DateUtils } from "../utils/date-utils";
+import { UpdateClientDto } from './dto/update-client.dto';
+import { DateUtils } from '../utils/date-utils';
 
 @Injectable()
 export class ClientsRepository {
@@ -20,8 +20,14 @@ export class ClientsRepository {
     client.phone = row['phone'];
     client.sex = row['sex'];
     client.address = row['address'];
-    client.createdAt = row['created_at'] instanceof Date ? row['created_at'] : DateUtils.createDateFromDatabaseDate(row['created_at']);
-    client.updatedAt = row['updated_at'] instanceof Date ? row['updated_at'] : DateUtils.createDateFromDatabaseDate(row['updated_at']);
+    client.createdAt =
+      row['created_at'] instanceof Date
+        ? row['created_at']
+        : DateUtils.createDateFromDatabaseDate(row['created_at']);
+    client.updatedAt =
+      row['updated_at'] instanceof Date
+        ? row['updated_at']
+        : DateUtils.createDateFromDatabaseDate(row['updated_at']);
     return client;
   }
 
@@ -36,7 +42,7 @@ export class ClientsRepository {
         createClientDto.phone,
         createClientDto.sex,
         createClientDto.address,
-        createClientDto.createdBy
+        createClientDto.createdBy,
       ])
       .then(() => {
         const selectQuery = `SELECT * FROM clients ORDER BY id DESC LIMIT 1`;
@@ -64,7 +70,7 @@ export class ClientsRepository {
     );
   }
 
-  async update(id: number, updateClientDto: UpdateClientDto,): Promise<Client> {
+  async update(id: number, updateClientDto: UpdateClientDto): Promise<Client> {
     const updateQuery = `
       UPDATE clients
       SET first_name = COALESCE(?, first_name),
