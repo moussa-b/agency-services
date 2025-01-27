@@ -17,8 +17,7 @@ export class SqliteService
 
   onModuleInit() {
     const databasePath =
-      this.configService.get<string>('DATABASE_FILE') ||
-      './database/agency_db.sqlite';
+      this.configService.get<string>('DATABASE_FILE') || './agency_db.sqlite';
     this.db = new Database(databasePath, (err) => {
       if (err) {
         console.error('Error connecting to SQLite database:', err);

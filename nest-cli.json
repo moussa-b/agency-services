@@ -6,14 +6,10 @@
     "deleteOutDir": true,
     "assets": [
       {
-        "include": "../database/**/*",
-        "exclude": "../database/seeds/*",
-        "outDir": "dist/database"
+        "include": "shared/db/migrations/**/*.*"
       },
       {
-        "include": "../database/**/*",
-        "exclude": "../database/agency_db.sqlite",
-        "outDir": "dist/database"
+        "include": "shared/db/seeds/**/*.*"
       },
       {
         "include": "./shared/mail/templates/",

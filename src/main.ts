@@ -4,6 +4,7 @@ import { TransformInterceptor } from './shared/transform/transform.interceptor';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as basicAuth from 'express-basic-auth';
+import { KnexService } from './shared/db/knex.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -20,6 +21,10 @@ async function bootstrap() {
     origin: corsOrigins,
     credentials: true,
   });
+
+  // Initialize KnexService and run migrations before app starts
+  const knexService = app.get(KnexService);
+  await knexService.runMigrations();
 
   // Swagger
   // Warning SWAGGER_ROUTE must start with /

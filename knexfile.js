@@ -1,18 +1,12 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * @type { Object.<string, import("knex").Knex.Config> }
  */
 const path = require('path');
 const { execSync } = require('child_process');
-const pathPrefix = process.env.NODE_ENV === 'production' ? '../..' : '..';
-require('dotenv').config({ path: pathPrefix + '/.env' });
+require('dotenv').config({ path: '.env' });
 
-const filename = path.resolve(
-  path.join(
-    __dirname,
-    pathPrefix,
-    process.env.DATABASE_FILE || './database/agency_db.sqlite',
-  ),
-);
+const filename = path.resolve(path.join(__dirname, './agency_db.sqlite'));
 if (process.env.DATABASE_URL?.length > 0) {
   console.log(
     'Running knexfile.js with process.env.DATABASE_URL = ',
@@ -26,12 +20,9 @@ if (process.env.DATABASE_URL?.length > 0) {
 }
 
 function obfuscateDatabaseString(connectionString) {
-  return connectionString.replace(
-    /:\/\/(.*?):(.*?)@/,
-    (match, user, password) => {
-      return `://${user}:*****@`;
-    },
-  );
+  return connectionString.replace(/:\/\/(.*?):(.*?)@/, (match, user) => {
+    return `://${user}:*****@`;
+  });
 }
 
 try {
@@ -54,10 +45,10 @@ module.exports =
           connection: process.env.DATABASE_URL,
           migrations: {
             tableName: 'knex_migrations',
-            directory: './migrations',
+            directory: './src/shared/db/migrations',
           },
           seeds: {
-            directory: './seeds',
+            directory: './src/shared/db/seeds',
           },
         },
 
@@ -66,10 +57,10 @@ module.exports =
           connection: process.env.DATABASE_URL,
           migrations: {
             tableName: 'knex_migrations',
-            directory: './migrations',
+            directory: './src/shared/db/migrations',
           },
           seeds: {
-            directory: './seeds',
+            directory: './src/shared/db/seeds',
           },
         },
 
@@ -78,10 +69,10 @@ module.exports =
           connection: process.env.DATABASE_URL,
           migrations: {
             tableName: 'knex_migrations',
-            directory: './migrations',
+            directory: './src/shared/db/migrations',
           },
           seeds: {
-            directory: './seeds',
+            directory: './src/shared/db/seeds',
           },
         },
       }
@@ -94,10 +85,10 @@ module.exports =
           useNullAsDefault: true,
           migrations: {
             tableName: 'knex_migrations',
-            directory: './migrations',
+            directory: './src/shared/db/migrations',
           },
           seeds: {
-            directory: './seeds',
+            directory: './src/shared/db/seeds',
           },
         },
 
@@ -108,10 +99,10 @@ module.exports =
           },
           migrations: {
             tableName: 'knex_migrations',
-            directory: './migrations',
+            directory: './src/shared/db/migrations',
           },
           seeds: {
-            directory: './seeds',
+            directory: './src/shared/db/seeds',
           },
         },
 
@@ -123,10 +114,10 @@ module.exports =
           useNullAsDefault: true,
           migrations: {
             tableName: 'knex_migrations',
-            directory: './migrations',
+            directory: './src/shared/db/migrations',
           },
           seeds: {
-            directory: './seeds',
+            directory: './src/shared/db/seeds',
           },
         },
       };

@@ -9,6 +9,7 @@ import { MailHealthIndicator } from './mail/mail-health.indicator';
 import { MysqlService } from './db/mysql.service';
 import { DatabaseService } from './db/database-service';
 import { HealthIndicatorService } from '@nestjs/terminus';
+import { KnexService } from './db/knex.service';
 
 @Global()
 @Module({
@@ -36,6 +37,7 @@ import { HealthIndicatorService } from '@nestjs/terminus';
         : SqliteService,
     },
     HealthIndicatorService,
+    KnexService,
   ],
   exports: [
     DatabaseService,
