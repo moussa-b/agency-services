@@ -1,4 +1,9 @@
-import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleDestroy,
+  OnModuleInit,
+} from '@nestjs/common';
 import { createPool, Pool, PoolConnection } from 'mysql2/promise';
 import { ConfigService } from '@nestjs/config';
 import { DatabaseService } from './database-service';
@@ -9,6 +14,7 @@ export class MysqlService
   implements OnModuleInit, OnModuleDestroy
 {
   private pool?: Pool;
+  private readonly logger = new Logger(MysqlService.name);
 
   constructor(private readonly configService: ConfigService) {
     super();
@@ -106,10 +112,10 @@ export class MysqlService
     }
     try {
       const connection = await this.pool.getConnection();
-      console.log('MariaDB Database connected successfully');
+      this.logger.log('MariaDB Database connected successfully');
       connection.release();
     } catch (error) {
-      console.error('Error connecting to MariaDB:', error.message);
+      this.logger.error('Error connecting to MariaDB:', error.message);
       throw error;
     }
   }
@@ -117,7 +123,7 @@ export class MysqlService
   // Lifecycle hook to clean up the pool on module destruction
   async onModuleDestroy() {
     await this.pool.end();
-    console.log('MariaDB Database connection closed');
+    this.logger.log('MariaDB Database connection closed');
   }
 
   // Generic query method
@@ -126,7 +132,7 @@ export class MysqlService
       const [rows] = await this.pool.query<any[]>(queryText, params);
       return rows;
     } catch (error) {
-      console.error('Database query error:', error.message);
+      this.logger.error('Database query error:', error.message);
       throw error;
     }
   }
@@ -143,7 +149,7 @@ export class MysqlService
       return result;
     } catch (error) {
       await connection.rollback();
-      console.error('Transaction error:', error.message);
+      this.logger.error('Transaction error:', error.message);
       throw error;
     } finally {
       connection.release();

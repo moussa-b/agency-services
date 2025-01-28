@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import Knex from 'knex';
 import { ConfigService } from '@nestjs/config';
 import * as path from 'path';
@@ -8,6 +8,7 @@ import { execSync } from 'child_process';
 export class KnexService {
   private knex: Knex.Knex;
   private knexConfig: Knex.Knex.Config;
+  private readonly logger = new Logger(KnexService.name);
 
   constructor(private readonly configService: ConfigService) {
     this.printNpmPath();
@@ -50,9 +51,9 @@ export class KnexService {
   private printNpmPath() {
     try {
       const npmPath = execSync('which npm').toString().trim(); // Use 'where npm' on Windows
-      console.log('NPM Path:', npmPath);
+      this.logger.log(`NPM Path: ${npmPath}`);
     } catch (error) {
-      console.error('Error fetching npm path:', error.message);
+      this.logger.error('Error fetching npm path:', error.message);
     }
   }
 
@@ -60,29 +61,27 @@ export class KnexService {
     try {
       const connection = this.knexConfig.connection;
       if (typeof connection === 'string') {
-        console.log(
-          'Running knexfile.js with process.env.DATABASE_URL = ',
-          this.obfuscateDatabaseString(connection),
+        this.logger.log(
+          `Running knexfile.js with process.env.DATABASE_URL = ${this.obfuscateDatabaseString(connection)}`,
         );
       } else {
         const filename = (connection as Knex.Knex.Sqlite3ConnectionConfig)
           .filename;
         if (filename?.length > 0) {
-          console.log(
-            'Running knexfile.js with process.env.DATABASE_FILE =',
-            (connection as Knex.Knex.Sqlite3ConnectionConfig).filename,
+          this.logger.log(
+            `Running knexfile.js with process.env.DATABASE_FILE = ${filename}`,
           );
         } else {
-          console.error('Knex configuration not provided');
+          this.logger.error('Knex configuration not provided');
           return false;
         }
       }
-      console.log('Running migrations...');
+      this.logger.log('Running migrations...');
       await this.knex.migrate.latest({ loadExtensions: ['.js'] }); // Run latest migrations
-      console.log('Migrations completed');
+      this.logger.log('Migrations completed');
       return true;
     } catch (error) {
-      console.error('Error running migrations:', error);
+      this.logger.error('Error running migrations:', error);
       return false;
     }
   }
@@ -95,12 +94,12 @@ export class KnexService {
 
   async seedDatabase(): Promise<boolean> {
     try {
-      console.log('Running seeds...');
+      this.logger.log('Running seeds...');
       await this.knex.seed.run(); // Run seeds
-      console.log('Seeds completed');
+      this.logger.log('Seeds completed');
       return true;
     } catch (error) {
-      console.error('Error running seeds:', error);
+      this.logger.error('Error running seeds:', error);
       return false;
     }
   }

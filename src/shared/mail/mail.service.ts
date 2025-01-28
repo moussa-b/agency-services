@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { Transporter } from 'nodemailer';
 import * as hbs from 'nodemailer-express-handlebars'; //does not use latest version 7.0.0 because of error with require when building Docker
@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class MailService {
   private transporter: Transporter;
+  private readonly logger = new Logger(MailService.name);
 
   constructor(private config: ConfigService) {
     if (
@@ -76,7 +77,7 @@ export class MailService {
       await this.transporter.verify();
       return true;
     } catch (error) {
-      console.log('Mailer check failed with error : ', error);
+      this.logger.log('Mailer check failed with error : ', error);
       return false;
     }
   }
