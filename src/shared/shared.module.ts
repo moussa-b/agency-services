@@ -10,6 +10,8 @@ import { MysqlService } from './db/mysql.service';
 import { DatabaseService } from './db/database-service';
 import { HealthIndicatorService } from '@nestjs/terminus';
 import { KnexService } from './db/knex.service';
+import { AcceptLanguageResolver, I18nModule } from 'nestjs-i18n';
+import { join } from 'path';
 
 @Global()
 @Module({
@@ -21,6 +23,14 @@ import { KnexService } from './db/knex.service';
       },
     ]),
     ConfigModule.forRoot(),
+    I18nModule.forRoot({
+      fallbackLanguage: 'en',
+      loaderOptions: {
+        path: join(__dirname, '../i18n/'),
+        watch: true,
+      },
+      resolvers: [AcceptLanguageResolver],
+    }),
   ],
   providers: [
     {

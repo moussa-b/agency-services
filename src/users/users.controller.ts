@@ -9,6 +9,7 @@ import {
   Patch,
   Post,
   UseGuards,
+  Headers,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -39,9 +40,11 @@ export class UsersController {
   create(
     @Body() createUserDto: CreateUserDto,
     @CurrentUser() user: ConnectedUser,
+    @Headers('accept-language') acceptLanguage: string,
   ): Promise<User> {
+    const lang = acceptLanguage?.split(',')[0] || 'en';
     createUserDto.createdBy = user.id;
-    return this.usersService.create(createUserDto);
+    return this.usersService.create(createUserDto, lang);
   }
 
   @ApiOperation({ summary: 'Retrieve a list of all users' })

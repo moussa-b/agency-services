@@ -12,7 +12,11 @@
         "include": "shared/db/seeds/**/*.*"
       },
       {
-        "include": "./shared/mail/templates/",
+        "include": "shared/mail/templates/",
+        "watchAssets": true
+      },
+      {
+        "include": "i18n/**/*",
         "watchAssets": true
       }
     ],

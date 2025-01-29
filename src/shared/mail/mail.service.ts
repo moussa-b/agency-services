@@ -4,13 +4,17 @@ import { Transporter } from 'nodemailer';
 import * as hbs from 'nodemailer-express-handlebars'; //does not use latest version 7.0.0 because of error with require when building Docker
 import * as path from 'path';
 import { ConfigService } from '@nestjs/config';
+import { I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class MailService {
   private transporter: Transporter;
   private readonly logger = new Logger(MailService.name);
 
-  constructor(private config: ConfigService) {
+  constructor(
+    private config: ConfigService,
+    private readonly i18nService: I18nService,
+  ) {
     if (
       this.config.get<string>('EMAIL_SMTP_HOST')?.length > 0 &&
       Number(this.config.get<string>('EMAIL_SMTP_PORT')) > 0 &&
@@ -41,6 +45,15 @@ export class MailService {
             layoutsDir: path.join(__dirname, './templates/'),
             defaultLayout: false,
             partialsDir: path.join(__dirname, './templates/'),
+            helpers: {
+              i18n: (key: string, options: any) => {
+                // Translation helper
+                return this.i18nService.translate(key, {
+                  lang: options.hash.lang || 'fr',
+                  args: options.hash,
+                });
+              },
+            },
           },
           viewPath: path.join(__dirname, './templates/'),
           extName: '.hbs',
