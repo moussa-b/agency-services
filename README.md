@@ -205,7 +205,72 @@ Alternatively the services can be restarted with the folling command:
 docker-compose restart
 ```
 
-### Miscellaneous Docker commands
+## API Usage with cURL
+
+You can verify that the application is running correctly by making API requests using cURL.
+
+### Authentication
+
+Retrieve a JWT token by authenticating. The password `pwd` must be replaced by the one set in environment variable `ADMIN_USER_PASSWORD`.
+
+```sh
+curl http://localhost:4300/api/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"admin","password":"pwd"}'
+```
+
+The response will include a JWT token that must be used in subsequent requests.
+
+```json
+{"accessToken":"YOUR_JWT_TOKEN"}
+```
+
+### Client CRUD Operations (Protected by JWT)
+
+#### 1. Create a Client
+
+```sh
+curl http://localhost:4300/api/clients \
+  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{"lastName":"SAMPLE","firstName":"Client","email":"sample.client@example.com","phone":"01.02.03.94.05","sex":"M","preferredLanguage":"en","address":"1 Rue de Rivoli, 75000 PARIS"}'
+```
+
+#### 2. Get All Clients
+
+```sh
+curl http://localhost:4300/api/clients \
+  -H 'Authorization: Bearer YOUR_JWT_TOKEN'
+```
+
+#### 3. Get a Single Client
+
+The variable `{clientId}` must be replaced by a valid client id for subsequent requests.
+
+```sh
+curl http://localhost:4300/api/clients/{clientId} \
+  -H 'Authorization: Bearer YOUR_JWT_TOKEN'
+```
+
+#### 4. Update a Client
+
+```sh
+curl http://localhost:4300/api/clients/{clientId} \
+  -X 'PATCH' \
+  -H 'Authorization: Bearer YOUR_JWT_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{"id":3,"lastName":"SAMPLE - UPDATED","firstName":"Client","email":"sample.client@example.com","phone":"01.02.03.94.05","sex":"M","preferredLanguage":"en","address":"1 Rue de Rivoli, 75000 PARIS"}'
+```
+
+#### 5. Delete a Client
+
+```sh
+curl http://localhost:4300/api/clients/{clientId} \
+  -X 'DELETE' \
+  -H 'Authorization: Bearer YOUR_JWT_TOKEN' 
+```
+
+## Miscellaneous Docker commands
 
 Clean volumes, images, networks
 ```bash
