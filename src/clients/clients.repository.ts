@@ -19,6 +19,7 @@ export class ClientsRepository {
     client.email = row['email'];
     client.phone = row['phone'];
     client.sex = row['sex'];
+    client.preferredLanguage = row['preferred_language'];
     client.address = row['address'];
     client.createdAt =
       row['created_at'] instanceof Date
@@ -32,7 +33,7 @@ export class ClientsRepository {
   }
 
   async create(createClientDto: CreateClientDto): Promise<Client> {
-    const insertQuery = `INSERT INTO clients (uuid, first_name, last_name, email, phone, sex, address, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+    const insertQuery = `INSERT INTO clients (uuid, first_name, last_name, email, phone, sex, preferred_language, address, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     return this.databaseService
       .run(insertQuery, [
         uuidv4(),
@@ -41,6 +42,7 @@ export class ClientsRepository {
         createClientDto.email,
         createClientDto.phone,
         createClientDto.sex,
+        createClientDto.preferredLanguage,
         createClientDto.address,
         createClientDto.createdBy,
       ])
@@ -78,6 +80,7 @@ export class ClientsRepository {
           email = COALESCE(?, email),
           phone = COALESCE(?, phone),
           sex = COALESCE(?, sex),
+          preferred_language = COALESCE(?, preferred_language),
           address = COALESCE(?, address),
           updated_by = ?
       WHERE id = ?`;
@@ -88,6 +91,7 @@ export class ClientsRepository {
         updateClientDto.email || null,
         updateClientDto.phone || null,
         updateClientDto.sex || null,
+        updateClientDto.preferredLanguage || null,
         updateClientDto.address || null,
         updateClientDto.updatedBy,
         id,

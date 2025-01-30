@@ -12,6 +12,7 @@ export class User {
   firstName: string;
   lastName: string;
   sex: Sex;
+  preferredLanguage?: string;
   @ApiProperty({ enum: ['ADMIN', 'MANAGER', 'USER'] })
   role: UserRole;
   isActive: boolean;

@@ -8,6 +8,7 @@ export class Client {
   email: string;
   phone: string;
   sex?: Sex;
+  preferredLanguage?: string;
   address?: string;
   createdBy?: number;
   createdAt: Date;

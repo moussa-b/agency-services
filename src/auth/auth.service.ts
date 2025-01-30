@@ -51,8 +51,8 @@ export class AuthService {
     return { status: await this.usersService.resetPassword(resetPasswordDto) };
   }
 
-  async forgotPassword(email: string, lang: string): Promise<ResponseStatus> {
-    return { status: await this.usersService.forgotPassword(email, lang) };
+  async forgotPassword(email: string): Promise<ResponseStatus> {
+    return { status: await this.usersService.forgotPassword(email) };
   }
 
   getProfile(userId: number): Promise<User> {

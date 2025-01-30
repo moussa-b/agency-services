@@ -33,6 +33,10 @@ export class CreateClientDto {
   @IsOptional()
   address?: string;
 
+  @IsString()
+  @IsOptional()
+  preferredLanguage: string;
+
   createdBy?: number;
 
   updatedBy?: number;

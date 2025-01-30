@@ -25,6 +25,7 @@ export class UsersRepository {
     user.firstName = row['first_name'];
     user.lastName = row['last_name'];
     user.sex = row['sex'];
+    user.preferredLanguage = row['preferred_language'];
     user.role = row['role'];
     user.isActive = row['is_active'];
     user.activationToken = row['activation_token'];
@@ -49,8 +50,8 @@ export class UsersRepository {
     },
   ): Promise<User> {
     const insertQuery = `INSERT INTO users (
-      uuid, username, email, password, first_name, last_name, sex, activation_token, role, is_active, created_by
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+      uuid, username, email, password, first_name, last_name, sex, preferred_language, activation_token, role, is_active, created_by
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     return this.databaseService
       .run(insertQuery, [
         uuidv4(),
@@ -60,6 +61,7 @@ export class UsersRepository {
         userData.firstName,
         userData.lastName,
         userData.sex,
+        userData.preferredLanguage,
         userData.activationToken,
         userData.role || UserRole.USER,
         userData.isActive,
@@ -105,6 +107,7 @@ export class UsersRepository {
           first_name = COALESCE(?, first_name),
           last_name = COALESCE(?, last_name),
           sex = COALESCE(?, sex),
+          preferred_language = COALESCE(?, preferred_language),
           role = COALESCE(?, role),
           updated_by = ?
       WHERE id = ?`;
@@ -114,6 +117,7 @@ export class UsersRepository {
         customerData.firstName || null,
         customerData.lastName || null,
         customerData.sex || null,
+        customerData.preferredLanguage || null,
         customerData.role || null,
         customerData.updatedBy,
         id,

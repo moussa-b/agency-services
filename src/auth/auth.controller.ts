@@ -50,10 +50,8 @@ export class AuthController {
   @ApiOperation({ summary: 'Request a password reset' })
   async forgotPassword(
     @Body() forgotPasswordDto: ForgotPasswordDto,
-    @Headers('accept-language') acceptLanguage: string,
   ): Promise<ResponseStatus> {
-    const lang = acceptLanguage?.split(',')[0] || 'en';
-    return this.authService.forgotPassword(forgotPasswordDto.email, lang);
+    return this.authService.forgotPassword(forgotPasswordDto.email);
   }
 
   @Post('password/reset')

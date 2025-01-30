@@ -40,6 +40,10 @@ export class CreateUserDto {
   @IsOptional()
   role: UserRole;
 
+  @IsString()
+  @IsOptional()
+  preferredLanguage: string;
+
   createdBy?: number;
 
   updatedBy?: number;
